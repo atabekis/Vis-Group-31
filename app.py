@@ -40,14 +40,12 @@ if __name__ == '__main__':
     # import Data
     open_ABNB_data = pd.read_csv("Data/airbnb_open_data_clean.csv")
 
-    neighbourhood_group = open_ABNB_data['neighbourhood_group'].unique()
-    print(neighbourhood_group)
 
     mapbox_access_token = "pk.eyJ1IjoicGxvdGx5bWFwYm94IiwiYSI6ImNrOWJqb2F4djBnMjEzbG50amg0dnJieG4ifQ.Zme1-Uzoi75IaFbieBDl3A"
 
 
     fig = px.scatter_mapbox(open_ABNB_data, lat="lat", lon="long", hover_name="name", hover_data=["room_type", "price"],
-                        color_discrete_sequence=["fuchsia"], zoom=10, height=500)
+                        color_discrete_sequence=["fuchsia"], zoom=10, height=500)#, mode = "markers", marker_color = "price")
     fig.update_layout(mapbox_style="open-street-map")
     #fig.update_layout(mapbox_style="dark", mapbox_accesstoken=token)
     fig.update_layout(margin={"r":0,"t":0,"l":10,"b":50})

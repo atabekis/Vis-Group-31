@@ -1,5 +1,5 @@
 from dash import dcc, html
-from ..config import color_list1, color_list2
+from ..config import neighbourhood_group
 
 
 def generate_description_card():
@@ -10,10 +10,10 @@ def generate_description_card():
     return html.Div(
         id="description-card",
         children=[
-            html.H5("Example dashboard"),
+            html.H5("Group 31 Visualisations"),
             html.Div(
                 id="intro",
-                children="You can use this as a basic template for your JBI100 visualization project.",
+                children="Settings:",
             ),
         ],
     )
@@ -29,16 +29,16 @@ def generate_control_card():
         children=[
             html.Label("Color scatterplot 1"),
             dcc.Dropdown(
-                id="select-color-scatter-1",
-                options=[{"label": i, "value": i} for i in color_list1],
-                value=color_list1[0],
+                id="select-neighbourhood-group",
+                options=[{"label": i, "value": i} for i in neighbourhood_group],
+                value=neighbourhood_group[0],
             ),
             html.Br(),
             html.Label("Color scatterplot 2"),
             dcc.Dropdown(
                 id="select-color-scatter-2",
-                options=[{"label": i, "value": i} for i in color_list2],
-                value=color_list2[0],
+                options=[{"label": i, "value": i} for i in neighbourhood_group],
+                value=neighbourhood_group[0],
             ),
         ], style={"textAlign": "float-left"}
     )
