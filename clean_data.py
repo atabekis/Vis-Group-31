@@ -16,8 +16,11 @@ def clean_csv():
     df1 = df1.astype({'minimum_nights': int, 'number_of_reviews': int, 'reviews_per_month': int,
                       'review_rate_number': int, 'availability_365': int, 'calculated_host_listings_count': int,
                       'construction_year': int})
-
+    df = pd.read_csv('Data/airbnb_open_data_clean.csv')
+    all_neighborhood_names = list(df.groupby('neighbourhood_group').count().index)
+    df1['neighbourhood_group'] = df['neighbourhood_group'].replace(['brookln', 'manhatan'], ['Brooklyn', 'Manhattan'])
     df1.to_csv('Data/airbnb_open_data_clean.csv')
 
 
 clean_csv()
+
