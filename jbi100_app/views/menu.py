@@ -1,6 +1,8 @@
 from dash import dcc, html
-from ..config import neighbourhood_group
 
+import jbi100_app.config as config
+
+neighbourhood_group = config.get_neighbourhood_groups()
 
 def generate_description_card():
     """
