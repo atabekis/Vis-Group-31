@@ -29,16 +29,16 @@ def generate_control_card():
     return html.Div(
         id="control-card",
         children=[
-            html.Label("Color scatterplot 1"),
+            html.Label("Neighbourhood Groups"),
             dcc.Dropdown(
                 id="select-neighbourhood-group",
                 options=[{"label": i, "value": i} for i in neighbourhood_group],
                 value=neighbourhood_group[0],
             ),
             html.Br(),
-            html.Label("Color scatterplot 2"),
+            html.Label("Neighbourhoods"),
             dcc.Dropdown(
-                id="select-color-scatter-2",
+                id="select-neighbourhood",
                 options=[{"label": i, "value": i} for i in neighbourhood_group],
                 value=neighbourhood_group[0],
             ),

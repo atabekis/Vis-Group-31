@@ -1,8 +1,8 @@
 from jbi100_app.main import app
 from jbi100_app.views.menu import make_menu_layout
+from jbi100_app.views.mapboxplot import Mapboxplot
 
-from dash import html
-from dash import dcc
+from dash import html, dcc
 from dash.dependencies import Input, Output
 
 import plotly.express as px
@@ -41,18 +41,20 @@ if __name__ == '__main__':
     open_ABNB_data = pd.read_csv("Data/airbnb_open_data_clean.csv")
 
 
-    mapbox_access_token = "pk.eyJ1IjoicGxvdGx5bWFwYm94IiwiYSI6ImNrOWJqb2F4djBnMjEzbG50amg0dnJieG4ifQ.Zme1-Uzoi75IaFbieBDl3A"
+    # mapbox_access_token = "pk.eyJ1IjoicGxvdGx5bWFwYm94IiwiYSI6ImNrOWJqb2F4djBnMjEzbG50amg0dnJieG4ifQ.Zme1-Uzoi75IaFbieBDl3A"
 
 
-    #px.scatter_mapbox(open_ABNB_data, lat="lat", lon="long",hover_name="name", hover_data=["room_type", "price"],  )
+    # #px.scatter_mapbox(open_ABNB_data, lat="lat", lon="long",hover_name="name", hover_data=["room_type", "price"],  )
 
-    fig = px.scatter_mapbox(open_ABNB_data, lat="lat", lon="long", hover_name="name", hover_data=["room_type", "price"],
-                        color = "price", color_continuous_scale=px.colors.cyclical.IceFire ,zoom=10, height=500)
-    fig.update_layout(mapbox_style="open-street-map")
-    #fig.update_layout(mapbox_style="dark", mapbox_accesstoken=token)
-    fig.update_layout(margin={"r":0,"t":0,"l":10,"b":50})
+    # fig = px.scatter_mapbox(open_ABNB_data, lat="lat", lon="long", hover_name="name", hover_data=["room_type", "price"],
+    #                     color = "price", color_continuous_scale=px.colors.cyclical.IceFire ,zoom=10, height=500)
+    # fig.update_layout(mapbox_style="open-street-map")
+    # #fig.update_layout(mapbox_style="dark", mapbox_accesstoken=token)
+    # fig.update_layout(margin={"r":0,"t":0,"l":10,"b":50})
 
-    print(open_ABNB_data['neighbourhood'].unique())
+    # #print(open_ABNB_data['neighbourhood'].unique())
+
+    map_boxplot = Mapboxplot("boxplot1", open_ABNB_data)
 
     app.layout = html.Div(
         id="app-container",
@@ -68,15 +70,24 @@ if __name__ == '__main__':
             html.Div(
                 id="right-column",
                 className="nine columns",
-                children=[
-                    dcc.Graph(
-                        id='map',
-                        figure=fig
-                    )
-                ],
+                children=map_boxplot
+                ,
             ),
         ],
     )
 
+    #interactions
+    @app.callback(
+        Output(map_boxplot.html_id, "figure"), [
+        Input("select-neighbourhood-group", "value"),
+        Input("select-neighbourhood", "value")
+    ])
+    def update_mapboxplot(neighbourhood_group, neighbourhood):
+        return map_boxplot.update(neighbourhood_group, neighbourhood)
 
-    app.run_server(debug=False, dev_tools_ui=False)
+
+
+
+
+
+    app.run_server(debug=True, dev_tools_ui=True)
