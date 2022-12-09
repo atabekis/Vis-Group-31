@@ -25,6 +25,8 @@ class Mapboxplot(html.Div):
         # if neighbourhood != 'All':
         #     data = data.loc[data['neighbourhood'] == neighbourhood]
 
+        token = "pk.eyJ1IjoibHVjdG9ydGlrZSIsImEiOiJjbGJnZHJncDYwZmNkM29zMmN6ZDFweXVhIn0.f9rwUtWIeGiwuJTPKzuMUA"
+        
         #draw the figure
         pxfig = px.scatter_mapbox(
             data,
@@ -33,17 +35,18 @@ class Mapboxplot(html.Div):
             hover_name="name", 
             hover_data=["room_type", "price"],
             color = "price", 
-            color_continuous_scale=px.colors.cyclical.IceFire, 
+            color_continuous_scale=px.colors.sequential.Brwnyl, 
             zoom=10, 
             height=500
         )
         self.fig = go.Figure(pxfig)
         # self.fig.update_traces()
-        self.fig.update_layout(mapbox_style="open-street-map")
+        self.fig.update_layout(mapbox_accesstoken = token, mapbox_style="dark")#mapbox_style="open-street-map")
         #self.fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
 
        
-
+        # downgrade dash to 
+        
 
         #highlight points chosen in other graph(s)
         # if selected_data is None:
