@@ -3,6 +3,8 @@ from dash import dcc, html
 import jbi100_app.config as config
 
 neighbourhood_group = config.get_neighbourhood_groups()
+min_price, max_price = config.get_price_min_max()
+instant_bookability = config.get_inst_bookable()
 
 def generate_description_card():
     """
@@ -42,6 +44,28 @@ def generate_control_card():
                 options=[{"label": i, "value": i} for i in neighbourhood_group],
                 value=neighbourhood_group[0],
             ),
+            html.Br(),
+            html.Label("Price Range"),
+            dcc.RangeSlider(
+                min=min_price,
+                max=max_price,
+                value=[min_price,max_price],
+                allowCross=False,
+                id='price-range-slider',
+                marks={
+                    min_price:{'label': str(min_price)},
+                    max_price:{'label': str(max_price)}
+                },
+                tooltip={"placement":"bottom", "always_visible":True}
+            ),
+            html.Br(),
+            html.Label("Instantly Bookable"),
+            dcc.Dropdown(
+                id='instant-bookable',
+                options=[{"label": i, "value": i} for i in instant_bookability],
+                value=instant_bookability[0]
+            )
+
         ], style={"textAlign": "float-left"}
     )
 

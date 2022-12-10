@@ -10,25 +10,33 @@ class Mapboxplot(html.Div):
         super().__init__(
             className="graph_card",
             children=[
-                html.H6(name),
                 dcc.Graph(id=self.html_id)
             ]
         )
 
-    def update(self, neighbourhood_group, neighbourhood):#, selected_data):
+    def update(self, neighbourhood_group, neighbourhood, price_range, inst_bookable):#, selected_data):
         data = self.df.copy()
 
         #filter data on chosen groups
         if neighbourhood_group != 'All':
             data = data.loc[data['neighbourhood_group'] == neighbourhood_group]
         
+        #TODO: uncomment when dictionary is in place
         # if neighbourhood != 'All':
         #     data = data.loc[data['neighbourhood'] == neighbourhood]
+        
+        #filter data according to the given price range
+        min_mask = data["price"] >= price_range[0]
+        max_mask = data["price"] <= price_range[1]
+        data = data[min_mask & max_mask]
+
+        #filter for instant bookability
+        data = data[data["instant_bookable"] == inst_bookable]
 
         token = "pk.eyJ1IjoibHVjdG9ydGlrZSIsImEiOiJjbGJnZHJncDYwZmNkM29zMmN6ZDFweXVhIn0.f9rwUtWIeGiwuJTPKzuMUA"
         
         #draw the figure
-        pxfig = px.scatter_mapbox(
+        self.fig = px.scatter_mapbox(
             data,
             lat="lat", 
             lon="long", 
@@ -39,13 +47,13 @@ class Mapboxplot(html.Div):
             zoom=10, 
             height=500
         )
-        self.fig = go.Figure(pxfig)
-        # self.fig.update_traces()
-        self.fig.update_layout(mapbox_accesstoken = token, mapbox_style="dark")#mapbox_style="open-street-map")
-        #self.fig.update_layout(margin={"r":0,"t":0,"l":0,"b":0})
+        
+        self.fig.update_layout(mapbox_accesstoken = token, mapbox_style="dark")
+        self.fig.update_layout(
+            margin={"r":0,"t":0,"l":0,"b":0}
+        )
 
        
-        # downgrade dash to 
         
 
         #highlight points chosen in other graph(s)

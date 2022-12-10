@@ -41,19 +41,6 @@ if __name__ == '__main__':
     open_ABNB_data = pd.read_csv("Data/airbnb_open_data_clean.csv")
 
 
-    # mapbox_access_token = "pk.eyJ1IjoicGxvdGx5bWFwYm94IiwiYSI6ImNrOWJqb2F4djBnMjEzbG50amg0dnJieG4ifQ.Zme1-Uzoi75IaFbieBDl3A"
-
-
-    # #px.scatter_mapbox(open_ABNB_data, lat="lat", lon="long",hover_name="name", hover_data=["room_type", "price"],  )
-
-    # fig = px.scatter_mapbox(open_ABNB_data, lat="lat", lon="long", hover_name="name", hover_data=["room_type", "price"],
-    #                     color = "price", color_continuous_scale=px.colors.cyclical.IceFire ,zoom=10, height=500)
-    # fig.update_layout(mapbox_style="open-street-map")
-    # #fig.update_layout(mapbox_style="dark", mapbox_accesstoken=token)
-    # fig.update_layout(margin={"r":0,"t":0,"l":10,"b":50})
-
-    # #print(open_ABNB_data['neighbourhood'].unique())
-
     map_boxplot = Mapboxplot("boxplot1", open_ABNB_data)
 
     app.layout = html.Div(
@@ -71,7 +58,6 @@ if __name__ == '__main__':
                 id="right-column",
                 className="nine columns",
                 children=map_boxplot
-                ,
             ),
         ],
     )
@@ -80,14 +66,12 @@ if __name__ == '__main__':
     @app.callback(
         Output(map_boxplot.html_id, "figure"), [
         Input("select-neighbourhood-group", "value"),
-        Input("select-neighbourhood", "value")
+        Input("select-neighbourhood", "value"),
+        Input('price-range-slider', "value"),
+        Input('instant-bookable', "value")
     ])
-    def update_mapboxplot(neighbourhood_group, neighbourhood):
-        return map_boxplot.update(neighbourhood_group, neighbourhood)
-
-
-
-
+    def update_mapboxplot(neighbourhood_group, neighbourhood, price_range, inst_bookable):
+        return map_boxplot.update(neighbourhood_group, neighbourhood, price_range, inst_bookable)
 
 
     app.run_server(debug=False, dev_tools_ui=False)
