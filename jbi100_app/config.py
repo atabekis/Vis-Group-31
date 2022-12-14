@@ -15,7 +15,7 @@ def get_neighbourhood_groups():
     neighbourhood_group = data['neighbourhood_group'].unique()
     return neighbourhood_group
 
-
+# Returns the unique neighbourhoods as items and their groups as keys in a dictionary
 def get_neighbourhood():
     neighbourhoods = {'Manhattan': [], 'Staten Island': [], 'Brooklyn': [], 'Bronx': [], 'Queens': []}
 
