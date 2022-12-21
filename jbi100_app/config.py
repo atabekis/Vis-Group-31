@@ -18,7 +18,7 @@ def get_neighbourhood_groups():
 
 # Returns the unique neighbourhoods as items and their groups as keys in a dictionary
 def get_neighbourhood():
-    neighbourhoods = {'All': list(neighbourhood_group), 'Manhattan': [], 'Staten Island': [], 'Brooklyn': [],
+    neighbourhoods = {'All': list(get_neighbourhood_groups()), 'Manhattan': [], 'Staten Island': [], 'Brooklyn': [],
                       'Bronx': [], 'Queens': []}
 
     with open("../Data/airbnb_open_data_clean.csv", encoding='utf-8') as f:
