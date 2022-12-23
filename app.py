@@ -1,6 +1,7 @@
 from jbi100_app.main import app
 from jbi100_app.views.menu import make_menu_layout
 from jbi100_app.views.mapboxplot import Mapboxplot
+import jbi100_app.config as config
 
 from dash import html, dcc
 from dash.dependencies import Input, Output
@@ -50,7 +51,7 @@ if __name__ == '__main__':
             html.Div(
                 id="left-column",
                 className="three columns",
-                children=make_menu_layout()
+                children=make_menu_layout("All")
             ),
 
             # Right column
@@ -72,6 +73,13 @@ if __name__ == '__main__':
     ])
     def update_mapboxplot(neighbourhood_group, neighbourhood, price_range, inst_bookable):
         return map_boxplot.update(neighbourhood_group, neighbourhood, price_range, inst_bookable)
+
+    @app.callback(
+        Output("left-column", "children"),
+        Input("select-neighbourhood-group", "value")
+    )
+    def update_nieghbourhoods(neighbourhood):
+        return make_menu_layout(neighbourhood)
 
 
     app.run_server(debug=False, dev_tools_ui=False)

@@ -21,9 +21,8 @@ class Mapboxplot(html.Div):
         if neighbourhood_group != 'All':
             data = data.loc[data['neighbourhood_group'] == neighbourhood_group]
         
-        #TODO: uncomment when dictionary is in place
-        # if neighbourhood != 'All':
-        #     data = data.loc[data['neighbourhood'] == neighbourhood]
+        if neighbourhood != 'All':
+            data = data.loc[data['neighbourhood'] == neighbourhood]
         
         #filter data according to the given price range
         min_mask = data["price"] >= price_range[0]
