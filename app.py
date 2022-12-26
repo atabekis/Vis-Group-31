@@ -46,21 +46,25 @@ if __name__ == '__main__':
 
     app.layout = html.Div(
         id="app-container",
+        className="row",
         children=[
             # Left column
             html.Div(
                 id="left-column",
                 className="three columns",
-                children=make_menu_layout("All")
+                children=make_menu_layout("All"),
+                style={'backgroundColor':"#323130"}
             ),
 
             # Right column
             html.Div(
                 id="right-column",
                 className="nine columns",
-                children=map_boxplot
+                children=map_boxplot,
+                style={'backgroundColor':"#323130"}
             ),
         ],
+        style={'backgroundColor':"#323130"}
     )
 
     #interactions
@@ -69,10 +73,11 @@ if __name__ == '__main__':
         Input("select-neighbourhood-group", "value"),
         Input("select-neighbourhood", "value"),
         Input('price-range-slider', "value"),
-        Input('instant-bookable', "value")
+        Input('instant-bookable', "value"),
+        Input('service-fee-range-slider', 'value')
     ])
-    def update_mapboxplot(neighbourhood_group, neighbourhood, price_range, inst_bookable):
-        return map_boxplot.update(neighbourhood_group, neighbourhood, price_range, inst_bookable)
+    def update_mapboxplot(neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range):
+        return map_boxplot.update(neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range)
 
     @app.callback(
         Output("left-column", "children"),

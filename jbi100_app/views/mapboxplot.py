@@ -9,12 +9,13 @@ class Mapboxplot(html.Div):
 
         super().__init__(
             className="graph_card",
+            style={'backgroundColor':"#323130"},
             children=[
                 dcc.Graph(id=self.html_id)
             ]
         )
 
-    def update(self, neighbourhood_group, neighbourhood, price_range, inst_bookable):#, selected_data):
+    def update(self, neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range):#, selected_data):
         data = self.df.copy()
 
         #filter data on chosen groups
@@ -25,9 +26,14 @@ class Mapboxplot(html.Div):
             data = data.loc[data['neighbourhood'] == neighbourhood]
         
         #filter data according to the given price range
-        min_mask = data["price"] >= price_range[0]
-        max_mask = data["price"] <= price_range[1]
-        data = data[min_mask & max_mask]
+        min_price_mask = data["price"] >= price_range[0]
+        max_price_mask = data["price"] <= price_range[1]
+        data = data[min_price_mask & max_price_mask]
+
+        #filtler data according to the fiven service fee range
+        min_service_mask = data["service_fee"] >= service_fee_range[0]
+        max_service_mask = data["service_fee"] <= service_fee_range[1]
+        data = data[min_service_mask & max_service_mask]
 
         #filter for instant bookability
         data = data[data["instant_bookable"] == inst_bookable]
@@ -44,12 +50,16 @@ class Mapboxplot(html.Div):
             color = "price", 
             color_continuous_scale=px.colors.sequential.Brwnyl, 
             zoom=10, 
-            height=500
+            height=500,
         )
         
-        self.fig.update_layout(mapbox_accesstoken = token, mapbox_style="dark")
+        self.fig.update_layout(mapbox_accesstoken = token, 
+                                mapbox_style="dark"
+        )
         self.fig.update_layout(
-            margin={"r":0,"t":0,"l":0,"b":0}
+            margin={"r":0,"t":0,"l":0,"b":0},
+            paper_bgcolor="#323130",
+            #plot_bgcolor="#323130"
         )
 
        

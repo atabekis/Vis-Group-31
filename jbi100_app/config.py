@@ -54,3 +54,8 @@ def get_price_min_max():
 def get_inst_bookable():
     bookable = data['instant_bookable'].unique()
     return bookable
+
+def get_service_fee():
+    max = data['service_fee'].max()
+    min = data['service_fee'].min()
+    return int(min), int(max)
