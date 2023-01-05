@@ -15,7 +15,7 @@ class Mapboxplot(html.Div):
             ]
         )
 
-    def update(self, neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range):#, selected_data):
+    def update(self, neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range): #, selected_data):
         data = self.df.copy()
 
         #filter data on chosen groups
@@ -62,7 +62,6 @@ class Mapboxplot(html.Div):
             #plot_bgcolor="#323130"
         )
 
-       
         
 
         #highlight points chosen in other graph(s)

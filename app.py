@@ -1,6 +1,8 @@
 from jbi100_app.main import app
 from jbi100_app.views.menu import make_menu_layout
 from jbi100_app.views.mapboxplot import Mapboxplot
+from jbi100_app.views.scatterplot import Scatterplot
+from jbi100_app.views.selectedplot import Selectedplot
 import jbi100_app.config as config
 
 from dash import html, dcc
@@ -43,6 +45,7 @@ if __name__ == '__main__':
 
 
     map_boxplot = Mapboxplot("boxplot1", open_ABNB_data)
+    #selected_data_plot = Scatterplot("scatterplot1", "price", "review_rate_number", open_ABNB_data)
 
     app.layout = html.Div(
         id="app-container",
@@ -60,9 +63,14 @@ if __name__ == '__main__':
             html.Div(
                 id="right-column",
                 className="nine columns",
-                children=map_boxplot,
+                children=[map_boxplot],#, selected_data_plot],
                 style={'backgroundColor':"#323130"}
             ),
+
+            html.Div([
+                dcc.Graph(id='show_on_hover'),
+            ], style={'display': 'inline-block', 'width': '49%'}),
+            
         ],
         style={'backgroundColor':"#323130"}
     )
@@ -85,6 +93,25 @@ if __name__ == '__main__':
     )
     def update_nieghbourhoods(neighbourhood):
         return make_menu_layout(neighbourhood)
+
+    # selected data plot:
+    # @app.callback(
+    #     Output(selected_data_plot.html_id, "figure"), [
+    #         Input(map_boxplot.html_id, 'selectedData')
+    #     ])
+    
+    # def update_selected_plot(selected_data):
+    #     return selected_data_plot.update(selected_data)
+
+    # going to test something (on hover / click):
+
+    # @app.callback(
+    #     Output("show_on_hover", 'figure'),
+    #     Input(map_boxplot.html_id, "hoverData")
+    # )
+
+    # def update_hover_graph(price, review_rate_number, hoverData):
+
 
 
     app.run_server(debug=False, dev_tools_ui=False)

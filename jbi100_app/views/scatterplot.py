@@ -18,6 +18,8 @@ class Scatterplot(html.Div):
             ],
         )
 
+# tried some stuff but does not work at all rn 
+
     def update(self, selected_color, selected_data):
         self.fig = go.Figure()
 
