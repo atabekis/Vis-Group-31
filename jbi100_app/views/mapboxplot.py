@@ -15,7 +15,7 @@ class Mapboxplot(html.Div):
             ]
         )
 
-    def update(self, neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range): #, selected_data):
+    def update(self, neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range, selected_data):
         data = self.df.copy()
 
         #filter data on chosen groups
@@ -65,21 +65,21 @@ class Mapboxplot(html.Div):
         
 
         #highlight points chosen in other graph(s)
-        # if selected_data is None:
-        #     selected_index = data.index #shows all
-        # else:
-        #     selected_index = [ #show only selected indices
-        #         x.get('pointIndex', None)
-        #         for x in selected_data['points']
-        #     ]
+        if selected_data is None:
+            selected_index = data.index #shows all
+        else:
+            selected_index = [ #show only selected indices
+                x.get('pointIndex', None)
+                for x in selected_data['points']
+            ]
 
-        # self.fig.data[0].update(
-        #     selectedpoints = selected_index,
+        self.fig.data[0].update(
+            selectedpoints = selected_index,
 
-        #     # color of selected points
-        #     selected=dict(marker=dict(color='BLUE')),
+            # color of selected points
+            selected=dict(marker=dict(color='BLUE')),
 
-        #     # color of unselected pts
-        #     unselected=dict(marker=dict(color='rgb(200,200,200)', opacity=0.9))
-        # )
+            # color of unselected pts
+            unselected=dict(marker=dict(color='rgb(200,200,200)', opacity=0.9))
+        )
         return self.fig

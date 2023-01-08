@@ -23,8 +23,8 @@ class Selectedplot(html.Div):
         data = self.df.copy()
         self.fig = go.Figure()
 
-        x_values = self.df[self.feature_x]
-        y_values = self.df[self.feature_y]
+        x_values = data[self.feature_x]
+        y_values = data[self.feature_y]
         self.fig.add_trace(go.Scatter(
             x=x_values, 
             y=y_values,

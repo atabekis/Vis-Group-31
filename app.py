@@ -45,7 +45,7 @@ if __name__ == '__main__':
 
 
     map_boxplot = Mapboxplot("boxplot1", open_ABNB_data)
-    #selected_data_plot = Scatterplot("scatterplot1", "price", "review_rate_number", open_ABNB_data)
+    selected_data_plot = Scatterplot("scatterplot1", "price", "review_rate_number", open_ABNB_data)
 
     app.layout = html.Div(
         id="app-container",
@@ -63,13 +63,13 @@ if __name__ == '__main__':
             html.Div(
                 id="right-column",
                 className="nine columns",
-                children=[map_boxplot],#, selected_data_plot],
+                children=[map_boxplot, selected_data_plot],
                 style={'backgroundColor':"#323130"}
             ),
 
-            html.Div([
-                dcc.Graph(id='show_on_hover'),
-            ], style={'display': 'inline-block', 'width': '49%'}),
+            # html.Div([
+            #     dcc.Graph(id='show_on_hover'),
+            # ], style={'display': 'inline-block', 'width': '49%'}),
             
         ],
         style={'backgroundColor':"#323130"}
@@ -82,10 +82,11 @@ if __name__ == '__main__':
         Input("select-neighbourhood", "value"),
         Input('price-range-slider', "value"),
         Input('instant-bookable', "value"),
-        Input('service-fee-range-slider', 'value')
+        Input('service-fee-range-slider', 'value'),
+        Input(selected_data_plot.html_id, 'selectedData')
     ])
-    def update_mapboxplot(neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range):
-        return map_boxplot.update(neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range)
+    def update_mapboxplot(neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range, selected_data):
+        return map_boxplot.update(neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range, selected_data)
 
     @app.callback(
         Output("left-column", "children"),
@@ -95,13 +96,13 @@ if __name__ == '__main__':
         return make_menu_layout(neighbourhood)
 
     # selected data plot:
-    # @app.callback(
-    #     Output(selected_data_plot.html_id, "figure"), [
-    #         Input(map_boxplot.html_id, 'selectedData')
-    #     ])
+    @app.callback(
+    Output(selected_data_plot.html_id, "figure"), [
+    Input(map_boxplot.html_id, 'selectedData')
+    ])
     
-    # def update_selected_plot(selected_data):
-    #     return selected_data_plot.update(selected_data)
+    def update_selected_plot(selected_data):
+        return selected_data_plot.update("Blue", selected_data)
 
     # going to test something (on hover / click):
 
@@ -111,7 +112,5 @@ if __name__ == '__main__':
     # )
 
     # def update_hover_graph(price, review_rate_number, hoverData):
-
-
 
     app.run_server(debug=False, dev_tools_ui=False)
