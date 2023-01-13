@@ -1,5 +1,5 @@
 import dash
-import dash_loading_spinners
+# import dash_loading_spinners
 from dash import Dash, dcc, html
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
@@ -10,7 +10,7 @@ from functions.barchart import Barchart
 import numpy as np
 import pandas as pd
 from textwrap import dedent
-import dash_loading_spinners
+# import dash_loading_spinners
 import time
 
 app = dash.Dash(__name__)
