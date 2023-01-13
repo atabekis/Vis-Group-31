@@ -4,6 +4,7 @@ from dash.dependencies import Input, Output
 import functions.config as config
 from functions.mapboxplot import Mapboxplot
 from functions.choropleth_mapbox import Choropleth
+from functions.barchart import Barchart
 import numpy as np
 import pandas as pd
 
@@ -50,13 +51,7 @@ def build_tabs():
                         },
                         disabled=False,
                         children=[
-                            html.Div(
-                                children=[
-                                    html.Br(),
-                                    html.Br(),
-                                    map_choropleth
-                                ]
-                            )
+                            build_choropleth_tabs()
                         ]
                     ),
                     dcc.Tab(
@@ -89,6 +84,39 @@ def build_tabs():
         ]
     )
 
+def build_choropleth_tabs():
+    return html.Div(
+        id="choropleth-content",
+        className="row",
+        children=[
+            html.Div(
+                className="eight columns",
+                children=[
+                    html.Br(),
+                    map_choropleth
+                ]
+            ),
+
+            html.Div(
+                className="four columns",
+                children=[
+                    html.Br(),
+                    dcc.Dropdown(
+                        options=[
+                            {'label': 'Price', 'value': 'price'},
+                            {'label': 'Number of reviews per month', 'value': 'reviews_per_month'},
+                            {'label': 'Service fee', 'value': 'service_fee'}
+                            ],
+                        value='price', id='barchart-dropdown', 
+                        clearable=False, searchable=False
+                    ),
+                    map_barchart
+                ]
+            )
+        ]
+    )
+                    
+            
 
 def build_choropleth_controls():
     pass
@@ -187,6 +215,7 @@ data = pd.read_csv("Data/airbnb_open_data_clean.csv", low_memory=False)
 
 map_boxplot = Mapboxplot("boxplot1", data)
 map_choropleth = Choropleth('choropleth', data)
+map_barchart = Barchart("barchart1", data)
 
 app.layout = html.Div(
     children=[
@@ -225,6 +254,15 @@ def update_neighbourhoods(neighbourhood):
 )
 def update_map_choropleth(asd):
     return map_choropleth.update()
+
+@app.callback(
+    Output(map_barchart.html_id, 'figure'),[
+    Input(map_choropleth.html_id, 'clickData'),
+    Input('barchart-dropdown', 'value')]
+)
+def update_map_barchart(clickData, dropdown_choice):
+    name = clickData['points'][0]['location']
+    return map_barchart.update(name, dropdown_choice)
 
 
 app.run_server()

@@ -37,7 +37,7 @@ class Choropleth(html.Div):
                                         mapbox_style="carto-positron",
                                         zoom=10, center={"lat": 40.73963, "lon": -73.98166},
                                         opacity=0.5,
-                                        labels={'price': 'Price'}
+                                        labels={'price': 'Average price'}
                                         )
 
         self.fig.update_layout(mapbox_accesstoken=token,
