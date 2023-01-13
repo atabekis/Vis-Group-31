@@ -1,12 +1,17 @@
 import dash
+import dash_loading_spinners
 from dash import Dash, dcc, html
-from dash.dependencies import Input, Output
+from dash.dependencies import Input, Output, State
+from dash.exceptions import PreventUpdate
 import functions.config as config
 from functions.mapboxplot import Mapboxplot
 from functions.choropleth_mapbox import Choropleth
 from functions.barchart import Barchart
 import numpy as np
 import pandas as pd
+from textwrap import dedent
+import dash_loading_spinners
+import time
 
 app = dash.Dash(__name__)
 
@@ -19,7 +24,46 @@ def build_banner():
             html.H5('Somebody please end my suffering'),
             # html.Br,
             # html.H6('Bartan is a little bitch'),
-            html.Img(src='assets/TUE.png')
+            # html.Img(src='assets/TUE.png'),
+            html.Button(
+                id='whats-this-button',
+                children="What's This?",
+                n_clicks=0),
+            html.Img(src='assets/TUE.png'),
+        ]
+    )
+
+
+def build_explanation():
+    return html.Div(
+        id='markdown',
+        className='modal',
+        style={'display': 'none'},
+        children=[
+            html.Div(
+                id='markdown-container',
+                className='markdown-container',
+                children=[
+                    html.Div(
+                        className='close-container',
+                        children=[html.Button(
+                            'Close',
+                            id='markdown-close',
+                            n_clicks=0,
+                            className='closeButton'
+                        )]
+                    ),
+                    html.Div(
+                        className='markdown-text',
+                        children=dcc.Markdown(
+                            children=dedent("""
+                            IM WRITING THIS TO LET YOU KNOW THAT BARTAN IS A LITTLE BITCH
+                            AND I STAND WITH WHAT I SAY :)))
+                            """)
+                        )
+                    )
+                ]
+            )
         ]
     )
 
@@ -324,6 +368,59 @@ app.layout = html.Div(
 )
 
 
+# app.layout = html.Div(
+#      children=[
+#              html.Div(
+#                  className="div-app",
+#                  id="div-app",
+#                  children=[
+#                      build_banner(),
+#                      build_tabs(),
+#                      html.Div(
+#                          id='app-content',
+#                          className='container scalable'
+#                      )
+#                  ]
+#              )
+#          ]
+#      )
+
+
+# @app.callback(
+#     Output("div-loading", "children"),
+#     [
+#         Input("div-app", "loading_state")
+#     ],
+#     [
+#         State("div-loading", "children"),
+#     ]
+# )
+# def hide_loading_after_startup(
+#         loading_state,
+#         children
+# ):
+#     if children:
+#         print("remove loading spinner!")
+#         time.sleep(3)
+#         return None
+#     print("spinner already gone!")
+#     raise PreventUpdate
+
+
+
+@app.callback(Output('markdown', 'style'),
+              Input('whats-this-button', 'n_clicks'),
+              Input('markdown-close', 'n_clicks'))
+def update_markdown(open_click, close_click):
+    callback = dash.callback_context
+    if callback.triggered:
+        prop_id = callback.triggered[0]['prop_id'].split('.')[0]
+        if prop_id == 'whats-this-button':
+            return {'display':'block'}
+    return {'display':'none'}
+
+
+
 @app.callback(
     Output(map_boxplot.html_id, "figure"), [
         Input("select-neighbourhood-group", "value"),
@@ -369,3 +466,5 @@ def update_map_barchart(clickData, dropdown_choice):
 
 
 app.run_server()
+
+# asd
