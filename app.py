@@ -74,7 +74,22 @@ def build_tabs():
                                 build_mapbox_controls('All')
                             ),
                             html.Div(
-                                children=map_boxplot
+                                className="row",
+                                children=[
+                                    html.Div(  
+                                    className="eight columns",
+                                        children=map_boxplot
+                                    ),
+                                    html.Div(
+                                        id='data-display',
+                                        className="four columns container",
+                                        children=[
+                                            html.Div(
+                                                build_mapbox_info_display(None)
+                                            )
+                                        ]
+                                    )
+                                ]
                             )
                         ],
                         disabled=False)
@@ -84,6 +99,85 @@ def build_tabs():
         ]
     )
 
+def build_mapbox_info_display(clickData):
+    print(clickData)
+    return html.Div(
+        className= "row",
+        children=[
+            html.Div(
+                className="twelve columns banner",
+                children = [
+                    html.H6(
+                        'Name'
+                    )
+                ]
+            )
+        ]
+    ),html.Div(
+        className= "row",
+        children=[
+            html.Div(
+                className="six columns banner",
+                children = [
+                    html.H6(
+                        'Price'
+                    )
+                ]
+            ),
+            html.Div(
+                className="six columns banner",
+                children = [
+                    html.H6(
+                        'Service Fee'
+                    )
+                ]
+            )
+        ]
+    ),html.Div(
+        className= "row",
+        children=[
+            html.Div(
+                className="twelve columns banner",
+                children = [
+                    html.H6(
+                        'Neighbourhood'
+                    )
+                ]
+            )
+        ]
+    ),html.Div(
+        className= "row",
+        children=[
+            html.Div(
+                className="six columns banner",
+                children = [
+                    html.H6(
+                        'Room Type'
+                    )
+                ]
+            ),
+            html.Div(
+                className="six columns banner",
+                children = [
+                    html.H6(
+                        'Minimum Nights'
+                    )
+                ]
+            )
+        ]
+    ),html.Div(
+        className= "row",
+        children=[
+            html.Div(
+                className="six columns banner",
+                children = [
+                    html.H6(
+                        'General Info'
+                    )
+                ]
+            )
+        ]
+    ),
 def build_choropleth_tabs():
     return html.Div(
         id="choropleth-content",
@@ -96,6 +190,7 @@ def build_choropleth_tabs():
                     map_choropleth
                 ]
             ),
+
 
             html.Div(
                 className="four columns",
@@ -256,6 +351,12 @@ def update_map_choropleth(asd):
     return map_choropleth.update()
 
 @app.callback(
+    Output("data-display", "children"),
+    Input(map_boxplot.html_id, 'clickData')
+)
+def update_data_display(clickData):
+    return build_mapbox_info_display(clickData)
+@app.callback(
     Output(map_barchart.html_id, 'figure'),[
     Input(map_choropleth.html_id, 'clickData'),
     Input('barchart-dropdown', 'value')]
@@ -263,6 +364,8 @@ def update_map_choropleth(asd):
 def update_map_barchart(clickData, dropdown_choice):
     name = clickData['points'][0]['location']
     return map_barchart.update(name, dropdown_choice)
+
+
 
 
 app.run_server()

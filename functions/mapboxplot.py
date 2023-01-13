@@ -50,13 +50,13 @@ class Mapboxplot(html.Div):
             lat="lat",
             lon="long",
             hover_name="name",
-            hover_data=["room_type", "price"],
+            # hover_data=["room_type", "price"],
             color='price',
             color_continuous_scale=px.colors.sequential.Brwnyl,
             range_color=(0, 1200),
             zoom=10,
             height=500,
-            labels={'price': 'Price'}
+            # labels={'price': 'Price'}
         )
 
         self.fig.update_layout(mapbox_accesstoken=token,
@@ -67,6 +67,9 @@ class Mapboxplot(html.Div):
             paper_bgcolor="#323130",
             # plot_bgcolor="#323130"
         )
+        # self.fig.update_traces(
+        #     hovertemplate=None,
+        #     hoverinfo = 'skip')
 
         # highlight points chosen in other graph(s)
         # if selected_data is None:
