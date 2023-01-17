@@ -23,26 +23,52 @@ body {
     border-bottom: 1px solid #95969A;
 }
 
+/*APP TITLE*/
+
 .banner h5 {
     color: #95969A;
-    margin-left: 2%;
+    margin-left: 10px;
+    margin-top: 1px;
     display: inline-block;
     font-family: 'Open Sans', sans-serif;
     font-size: 2rem;
     font-weight: bold;
-    line-height: 1;
+    line-height: 0.0;
     text-transform: uppercase;
+}
+
+/*APP SUBTITLE*/
+
+.banner h3 {
+    font-family: 'Open Sans', sans-serif;
+    margin-left: 10px;
+    margin-top: 0px;
+    font-size: 1.6rem;
+    line-height: 0.0;
+    color: #C72125;
 }
 
 
 .banner h6 {
-    margin-left: 2%;
+    font-family: 'Open Sans', sans-serif;
+    margin-left: 10px;
+    /*margin-top: 20px;*/
     font-size: 1.6rem;
-    line-height: 1;
+    line-height: 0.3;
+    /*color: #C72125;*/
+}
+
+
+
+
+.banner h4 {
+    margin-left: 10px;
+    font-size: 1.4rem;
+    /*line-height: 1;*/
 }
 
 .banner button {
-    margin-left: 5%;
+    margin-left: 45%;
     color: #95969A;
 }
 

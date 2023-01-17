@@ -17,21 +17,38 @@ class Choropleth(html.Div):
             ]
         )
 
-    def update(self):
+    def update(self, map_type):
         data = self.df.copy()
         # filter data on chosen groups
 
-        with open('data/neighbourhoods.geojson') as f:
+        with open('Data/neighbourhoods.geojson') as f:
             neighbourhoods = json.load(f)
 
+        with open('Data/boroughs.geojson') as f:
+            boroughs = json.load(f)
         # filter data according to the given price range
+
+        feature = 'properties.ntaname'
+        location = 'NTA'
+        file = neighbourhoods
+
+        if map_type == 'neighbourhoods':
+            feature = 'properties.ntaname'
+            location = 'NTA'
+            file = neighbourhoods
+
+        if map_type == 'boroughs':
+            feature = 'properties.boro_name'
+            location = 'neighbourhood_group'
+            file = boroughs
+
 
 
         token = "pk.eyJ1IjoibHVjdG9ydGlrZSIsImEiOiJjbGJnZHJncDYwZmNkM29zMmN6ZDFweXVhIn0.f9rwUtWIeGiwuJTPKzuMUA"
 
         # draw the figure
-        self.fig = px.choropleth_mapbox(data, geojson=neighbourhoods, locations='NTA', color='price',
-                                        featureidkey='properties.ntaname',
+        self.fig = px.choropleth_mapbox(data, geojson=file, locations=location, color='price',
+                                        featureidkey=feature,
                                         color_continuous_scale="Viridis",
                                         range_color=(0, 1200),
                                         mapbox_style="carto-positron",

@@ -22,14 +22,13 @@ def build_banner():
         className='banner',
         children=[
             html.H5('Somebody please end my suffering'),
-            # html.Br,
-            # html.H6('Bartan is a little bitch'),
-            # html.Img(src='assets/TUE.png'),
+
             html.Button(
                 id='whats-this-button',
                 children="What's This?",
                 n_clicks=0),
             html.Img(src='assets/TUE.png'),
+            html.H3('Group 31')
         ]
     )
 
@@ -95,6 +94,7 @@ def build_tabs():
                         },
                         disabled=False,
                         children=[
+                            html.Br(),
                             build_choropleth_tabs()
                         ]
                     ),
@@ -120,8 +120,8 @@ def build_tabs():
                             html.Div(
                                 className="row",
                                 children=[
-                                    html.Div(  
-                                    className="eight columns",
+                                    html.Div(
+                                        className="eight columns",
                                         children=map_boxplot
                                     ),
                                     html.Div(
@@ -143,122 +143,119 @@ def build_tabs():
         ]
     )
 
+
 def build_mapbox_info_display(clickData):
-    print(clickData)
+    name = ''
+    price = ''
+    service_fee = ''
+    neighbourhood = ''
+    room_type = ''
+    min_nights = ''
+    general_info = ''
+
+    if clickData is not None:
+        df_display = data[data['name'] == clickData['points'][0]['hovertext']]
+        df_display = (df_display.reset_index()).iloc[0]
+        name = df_display['name']
+        price = f"${df_display['price']}"
+        service_fee = df_display['service_fee']
+        neighbourhood = df_display['neighbourhood']
+        room_type = df_display['room_type']
+        min_nights = df_display['minimum_nights']
+        general_info = 'PENIS!!!'
+
     return html.Div(
-        className= "row",
+        className="row",
         children=[
             html.Div(
                 className="twelve columns banner",
-                children = [
-                    html.H6(
-                        'Name'
+                children=[
+                    html.H6('Name'),
+                    html.H4(
+                        id='mapbox-name',
+                        children=[name]
                     )
                 ]
             )
         ]
-    ),html.Div(
-        className= "row",
+    ), html.Div(
+        className="row",
         children=[
             html.Div(
                 className="six columns banner",
-                children = [
-                    html.H6(
-                        'Price'
+                children=[
+                    html.H6('Price'),
+                    html.H4(
+                        id='mapbox-price',
+                        children=[price]
                     )
                 ]
             ),
             html.Div(
                 className="six columns banner",
-                children = [
-                    html.H6(
-                        'Service Fee'
+                children=[
+                    html.H6('Service Fee'),
+                    html.H4(
+                        id='mapbox-service-fee',
+                        children=[service_fee]
                     )
                 ]
             )
         ]
-    ),html.Div(
-        className= "row",
+    ), html.Div(
+        className="row",
         children=[
             html.Div(
                 className="twelve columns banner",
-                children = [
-                    html.H6(
-                        'Neighbourhood'
+                children=[
+                    html.H6('Neighbourhood'),
+                    html.H4(
+                        id='mapbox-neighbourhood',
+                        children=[neighbourhood]
                     )
                 ]
             )
         ]
-    ),html.Div(
-        className= "row",
+    ), html.Div(
+        className="row",
         children=[
             html.Div(
                 className="six columns banner",
-                children = [
-                    html.H6(
-                        'Room Type'
+                children=[
+                    html.H6('Room Type'),
+                    html.H4(
+                        id='mapbox-room-type',
+                        children=[room_type]
                     )
                 ]
             ),
             html.Div(
                 className="six columns banner",
-                children = [
-                    html.H6(
-                        'Minimum Nights'
+                children=[
+                    html.H6('Minimum Nights'),
+                    html.H4(
+                        id='mapbox-minimum-nights',
+                        children=[min_nights]
                     )
                 ]
             )
         ]
-    ),html.Div(
-        className= "row",
+    ), html.Div(
+        className="row",
         children=[
             html.Div(
                 className="six columns banner",
-                children = [
-                    html.H6(
-                        'General Info'
+                children=[
+                    html.H6('General Info'),
+                    html.H4(
+                        id='mapbox-general-info',
+                        children=[general_info]
                     )
                 ]
             )
         ]
     ),
-def build_choropleth_tabs():
-    return html.Div(
-        id="choropleth-content",
-        className="row",
-        children=[
-            html.Div(
-                className="eight columns",
-                children=[
-                    html.Br(),
-                    map_choropleth
-                ]
-            ),
 
-
-            html.Div(
-                className="four columns",
-                children=[
-                    html.Br(),
-                    dcc.Dropdown(
-                        options=[
-                            {'label': 'Price', 'value': 'price'},
-                            {'label': 'Number of reviews per month', 'value': 'reviews_per_month'},
-                            {'label': 'Service fee', 'value': 'service_fee'}
-                            ],
-                        value='price', id='barchart-dropdown', 
-                        clearable=False, searchable=False
-                    ),
-                    map_barchart
-                ]
-            )
-        ]
-    )
-                    
-            
-
-def build_choropleth_controls():
-    pass
 
 def build_mapbox_controls(neighbourhood_name):
     # Define the basic variables
@@ -350,6 +347,58 @@ def build_mapbox_controls(neighbourhood_name):
     )
 
 
+def build_choropleth_tabs():
+    return html.Div(
+        id="choropleth-content",
+        className="row",
+        children=[
+            html.Div(
+                className="eight columns",
+                children=[
+                    html.Br(),
+                    dcc.Dropdown(
+                        options=[
+                            {'label': 'Neighbourhoods', 'value': 'neighbourhoods'},
+                            {'label': 'Boroughs', 'value': 'boroughs'},
+                        ],
+                        value='neighbourhoods', id='choropleth-dropdown',
+                        clearable=False, searchable=False
+                    ),
+                    dcc.Loading(
+                        id='loading-1',
+                        type='graph',
+                        children=[map_choropleth]
+                    )
+                    # map_choropleth
+                ]
+            ),
+
+            html.Div(
+                className="four columns",
+                children=[
+                    html.Br(),
+                    dcc.Dropdown(
+                        options=[
+                            {'label': 'Price', 'value': 'price'},
+                            {'label': 'Number of reviews per month', 'value': 'reviews_per_month'},
+                            {'label': 'Service fee', 'value': 'service_fee'}
+                        ],
+                        value='price', id='barchart-dropdown',
+                        clearable=False, searchable=False
+                    ),
+                    dcc.Loading(
+                        id='loading-2',
+                        type='graph',
+                        children=[map_barchart]
+
+                    ),
+                    # map_barchart
+                ]
+            )
+        ]
+    )
+
+
 data = pd.read_csv("Data/airbnb_open_data_clean.csv", low_memory=False)
 
 map_boxplot = Mapboxplot("boxplot1", data)
@@ -363,49 +412,10 @@ app.layout = html.Div(
         html.Div(
             id='app-content',
             className='container scalable'
-        )
+        ),
+        build_explanation()
     ]
 )
-
-
-# app.layout = html.Div(
-#      children=[
-#              html.Div(
-#                  className="div-app",
-#                  id="div-app",
-#                  children=[
-#                      build_banner(),
-#                      build_tabs(),
-#                      html.Div(
-#                          id='app-content',
-#                          className='container scalable'
-#                      )
-#                  ]
-#              )
-#          ]
-#      )
-
-
-# @app.callback(
-#     Output("div-loading", "children"),
-#     [
-#         Input("div-app", "loading_state")
-#     ],
-#     [
-#         State("div-loading", "children"),
-#     ]
-# )
-# def hide_loading_after_startup(
-#         loading_state,
-#         children
-# ):
-#     if children:
-#         print("remove loading spinner!")
-#         time.sleep(3)
-#         return None
-#     print("spinner already gone!")
-#     raise PreventUpdate
-
 
 
 @app.callback(Output('markdown', 'style'),
@@ -416,9 +426,8 @@ def update_markdown(open_click, close_click):
     if callback.triggered:
         prop_id = callback.triggered[0]['prop_id'].split('.')[0]
         if prop_id == 'whats-this-button':
-            return {'display':'block'}
-    return {'display':'none'}
-
+            return {'display': 'block'}
+    return {'display': 'none'}
 
 
 @app.callback(
@@ -440,12 +449,15 @@ def update_mapboxplot(neighbourhood_group, neighbourhood, price_range, inst_book
 def update_neighbourhoods(neighbourhood):
     return [build_mapbox_controls(neighbourhood)]
 
+
 @app.callback(
     Output(map_choropleth.html_id, 'figure'),
-    Input('app-tabs', 'value')
+    Input('choropleth-dropdown', 'value'),
+
 )
-def update_map_choropleth(asd):
-    return map_choropleth.update()
+def update_map_choropleth(value):
+    return map_choropleth.update(value)
+
 
 @app.callback(
     Output("data-display", "children"),
@@ -453,16 +465,22 @@ def update_map_choropleth(asd):
 )
 def update_data_display(clickData):
     return build_mapbox_info_display(clickData)
+
+
 @app.callback(
-    Output(map_barchart.html_id, 'figure'),[
-    Input(map_choropleth.html_id, 'clickData'),
-    Input('barchart-dropdown', 'value')]
+    Output(map_barchart.html_id, 'figure'), [
+        Input(map_choropleth.html_id, 'clickData'),
+        Input('barchart-dropdown', 'value'),
+        Input('app-tabs', 'value')]
 )
-def update_map_barchart(clickData, dropdown_choice):
-    name = clickData['points'][0]['location']
-    return map_barchart.update(name, dropdown_choice)
+def update_map_barchart(clickData, dropdown_choice, startup):
 
+    if clickData is None:
+        return map_barchart.update(None, None)
 
+    else:
+        name = clickData['points'][0]['location']
+        return map_barchart.update(name, dropdown_choice)
 
 
 app.run_server()
