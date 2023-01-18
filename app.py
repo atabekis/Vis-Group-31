@@ -32,6 +32,7 @@ This app.py file is seperated into multiple building functions for the construct
 # TODO: *Ata: To find a way to load in the graphs faster when pc is not plugged in lmao
 # TODO: *Select better color palette for application
 # TODO: **Find a better way to graph the barchart + change color palette to match with the choropleth
+# TODO: * Add the new dependencies to requirements.txt
 # ------------------------------------------------------------------------------------------------------#
 
 
