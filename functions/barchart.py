@@ -32,9 +32,11 @@ class Barchart(html.Div):
             ### histogram:
             self.fig = px.histogram(
                 data,
+                y='price',
                 x=dropdown_choice,
-                #histnorm="probability density",
-                nbins=50
+                nbins=50,
+                # color='red',
+                color_discrete_sequence=['#f3204f']
             )
 
             self.fig.update_layout(
@@ -44,7 +46,8 @@ class Barchart(html.Div):
                 font_color="white",
                 yaxis={
                     'showgrid': False
-                    }
+                    },
+                bargap=0.1
             )
             ### original barchart:
             # self.fig = px.bar(
