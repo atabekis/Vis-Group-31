@@ -18,30 +18,53 @@ class Barchart(html.Div):
             ]
         )
 
-    def update(self, NTA, dropdown_choice):
+    def update(self, NTA, dropdown_choice, map_dropdown):
 
         if NTA is not None:
-
             data = self.df.copy()
-            data = data[data['NTA'] == NTA]
 
-            self.fig = px.bar(
+            if map_dropdown == 'boroughs':
+                data = data[data['neighbourhood_group'] == NTA]
+            else:
+                data = data[data['NTA'] == NTA]
+
+
+            ### histogram:
+            self.fig = px.histogram(
                 data,
-                x='host_name',
-                y=dropdown_choice)
+                x=dropdown_choice,
+                #histnorm="probability density",
+                nbins=50
+            )
 
             self.fig.update_layout(
                 margin={"r": 0, "t": 0, "l": 0, "b": 0},
                 paper_bgcolor="#323130",
                 plot_bgcolor="#323130",
-                xaxis={
-                    'showgrid': False,
-                },
+                font_color="white",
                 yaxis={
                     'showgrid': False
-                }
-
+                    }
             )
+            ### original barchart:
+            # self.fig = px.bar(
+            #     data,
+            #     x='id',
+            #     y=dropdown_choice)
+
+            # self.fig.update_layout(
+            #     margin={"r": 0, "t": 0, "l": 0, "b": 0},
+            #     paper_bgcolor="#323130",
+            #     plot_bgcolor="#323130",
+            #     font_color="white",
+            #     xaxis={
+            #         'showgrid': False,
+            #     },
+            #     yaxis={
+            #         'showgrid': False
+            #     }
+
+            # )
 
             return self.fig
 

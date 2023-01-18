@@ -536,15 +536,16 @@ def update_data_display(clickData):
     Output(map_barchart.html_id, 'figure'), [
         Input(map_choropleth.html_id, 'clickData'),
         Input('barchart-dropdown', 'value'),
-        Input('app-tabs', 'value')]
+        Input('app-tabs', 'value'),
+        Input('choropleth-dropdown', 'value')]
 )
-def update_map_barchart(clickData, dropdown_choice, startup):
+def update_map_barchart(clickData, dropdown_choice, startup, map_dropdown):
     if clickData is None:
-        return map_barchart.update(None, None)
+        return map_barchart.update(None, None, None)
 
     else:
         name = clickData['points'][0]['location']
-        return map_barchart.update(name, dropdown_choice)
+        return map_barchart.update(name, dropdown_choice, map_dropdown)
 
 
 app.run_server(debug=False)

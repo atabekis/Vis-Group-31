@@ -58,7 +58,8 @@ class Choropleth(html.Div):
                                         )
 
         self.fig.update_layout(mapbox_accesstoken=token,
-                               mapbox_style="dark"
+                               mapbox_style="dark",
+                               font_color="white"
                                )
         self.fig.update_layout(
             margin={"r": 0, "t": 0, "l": 0, "b": 0},
