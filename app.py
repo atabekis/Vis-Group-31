@@ -9,6 +9,7 @@ import functions.config as config
 from functions.mapboxplot import Mapboxplot
 from functions.choropleth_mapbox import Choropleth
 from functions.barchart import Barchart
+from functions.treemap import TreeMap
 
 """
 JBI100 - Visualizations Final Project
@@ -29,6 +30,7 @@ This app.py file is seperated into multiple building functions for the construct
 # *: Not important, **: Important, ***: Very important
 
 # TODO: **Word/text processing should be graphed -> Bartan, Ata
+# TODO: Add the treemap -> Bartan
 # TODO: *Ata: To find a way to load in the graphs faster when pc is not plugged in lmao
 # TODO: *Select better color palette for application
 # TODO: **Find a better way to graph the barchart + change color palette to match with the choropleth
@@ -171,6 +173,15 @@ def build_tabs():
                                         ]
                                     )
                                 ]
+                            ), html.Div(
+                                className="row",
+                                children=[
+                                    html.Br(),
+                                    html.Div(
+                                        className='twelve columns',
+                                        children=tree_map
+                                    )
+                                ]
                             )
                         ],
                         disabled=False)
@@ -197,7 +208,7 @@ def build_mapbox_info_display(clickData):
     neighbourhood = ''
     room_type = ''
     min_nights = ''
-    general_info = ''
+    rules = ''
 
     # If a user click is detected:
     if clickData is not None:
@@ -209,13 +220,13 @@ def build_mapbox_info_display(clickData):
         neighbourhood = df_display['neighbourhood']
         room_type = df_display['room_type']
         min_nights = df_display['minimum_nights']
-        general_info = 'PENIS!!!'  # TODO: What is general info? What do we replace it with.
+        rules = df_display['house_rules'] 
 
     return html.Div(
         className="row",
         children=[
             html.Div(
-                className="twelve columns banner",
+                className="twelve columns banner h2",
                 children=[
                     html.H6('Name'),
                     html.H4(
@@ -291,12 +302,12 @@ def build_mapbox_info_display(clickData):
         className="row",
         children=[
             html.Div(
-                className="six columns banner",
+                className="twelve columns banner",
                 children=[
                     html.H6('General Info'),
-                    html.H4(
+                    html.H2(
                         id='mapbox-general-info',
-                        children=[general_info]
+                        children=[rules]
                     )
                 ]
             )
@@ -463,6 +474,7 @@ data = pd.read_csv("Data/airbnb_open_data_clean.csv", low_memory=False)
 map_boxplot = Mapboxplot("boxplot1", data)
 map_choropleth = Choropleth('choropleth', data)
 map_barchart = Barchart("barchart1", data)
+tree_map = TreeMap("treemap", data)
 
 
 # ------------------------------------------------------------------------------------------------------#
@@ -484,9 +496,10 @@ app.layout = html.Div(
 # ------------------------------------------------------------------------------------------------------#
 # ----------------------- Setting the callback functions for interactions ----------------------------- #
 # ------------------------------------------------------------------------------------------------------#
-@app.callback(Output('markdown', 'style'),
-              Input('whats-this-button', 'n_clicks'),
-              Input('markdown-close', 'n_clicks'))
+@app.callback(
+    Output('markdown', 'style'),
+    Input('whats-this-button', 'n_clicks'),
+    Input('markdown-close', 'n_clicks'))
 def update_markdown(open_click, close_click):
     callback = dash.callback_context
     if callback.triggered:
@@ -547,6 +560,16 @@ def update_map_barchart(clickData, dropdown_choice, startup, map_dropdown):
     else:
         name = clickData['points'][0]['location']
         return map_barchart.update(name, dropdown_choice, map_dropdown)
+
+@app.callback(
+    Output(tree_map.html_id, 'figure'),
+    Input(map_boxplot.html_id, 'selectedData')
+)
+def update_tree_map(selectedData):
+    if selectedData is None:
+        return tree_map.update(None)
+    else:
+        return tree_map.update(selectedData)
 
 
 app.run_server(debug=False)

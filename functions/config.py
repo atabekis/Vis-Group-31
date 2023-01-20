@@ -67,8 +67,16 @@ def get_service_fee():
     return int(min), int(max)
 
 
-def count_words(count):
-    processed_words = data['processed'].to_list()
+def count_words(selection_data, count):
+    if selection_data is not None:        
+        selection_list = selection_data['points']
+        long_lat_list = []
+        for point in selection_list:
+            long_lat_list.append((point['lon','lat']))
+    else:
+        filtered_data = data.copy()     
+
+    processed_words = filtered_data['processed'].to_list()
     clean = []
     for word in processed_words:
         if type(word) == str:
@@ -78,7 +86,3 @@ def count_words(count):
     amounts = Counter(clean).most_common(count)
 
     return pd.DataFrame(amounts, columns=['word', 'count'])
-
-# count_words()
-
-

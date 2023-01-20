@@ -58,6 +58,20 @@ body {
     /*color: #C72125;*/
 }
 
+/*MAPBOXPLOT INFO DISPLAY*/
+
+.banner h2 {
+    min-height: 20px;
+    background-color: #2d3038;
+    padding-top: 5px;
+    padding-left: 10px;
+    padding-right: 0px;
+    max-width: 100%;
+    margin-bottom: 10px;
+    border-bottom: 1px solid #95969A;
+    font-size: 1.4rem;
+}
+
 
 
 
