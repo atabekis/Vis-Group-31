@@ -32,7 +32,7 @@ class Barchart(html.Div):
             ### histogram:
             self.fig = px.histogram(
                 data,
-                y='price',
+                #y='price',
                 x=dropdown_choice,
                 nbins=50,
                 # color='red',
