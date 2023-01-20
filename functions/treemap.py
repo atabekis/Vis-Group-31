@@ -17,13 +17,11 @@ class TreeMap(html.Div):
             ]
         )
 
-    def update(self, data, selection_data):
+    def update(self, data):
         bin_count = 30
 
-        if selection_data is not None:
-            df = count_words(selection_data, 500)[:bin_count]
-        else:
-            df = count_words(None, 500)[:bin_count]
+        df = count_words(data, 500)[:bin_count]
+        
         
 
         fig = px.treemap(

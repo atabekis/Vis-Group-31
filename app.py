@@ -512,18 +512,22 @@ def update_markdown(open_click, close_click):
 @app.callback(
     [
         Output(map_boxplot.html_id, "figure"),
-        #Output(tree_map.html_id, "figure")
+        Output(tree_map.html_id, "figure")
     ]
     , [
         Input("select-neighbourhood-group", "value"),
         Input("select-neighbourhood", "value"),
         Input('price-range-slider', "value"),
         Input('instant-bookable', "value"), #TODO: change instant bookable to treemap box count?
-        Input('service-fee-range-slider', 'value')
+        Input('service-fee-range-slider', 'value'),
+        Input(map_boxplot.html_id, 'selectedData'),
+        Input(tree_map.html_id, 'clickData'),
+        Input(map_boxplot.df, )
     ])
-def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range):
+def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range, map_box_selected_data, tree_map_selected_data, current_data):
     #process data
-    df = data.df.copy()
+    print(current_data)
+    df = data.copy()
     # filter data on chosen groups
     if neighbourhood_group != 'All':
         df = df.loc[df['neighbourhood_group'] == neighbourhood_group]
@@ -544,18 +548,25 @@ def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, i
     # filter for instant book-ability
     df = df[df["instant_bookable"] == inst_bookable]
 
-    return map_boxplot.update(data)#, tree_map.update(data, None)
-    
+    if map_box_selected_data is not None:        
+        selection_list = map_box_selected_data['points']
+        long_lat_list = []
+        for point in selection_list:
+            lon = point['lon']
+            lat = point['lat']
+            long_lat_list.append((lon,lat))
+        
+        df = df[df[['long', 'lat']].apply(tuple, axis=1).isin(long_lat_list)]
 
-@app.callback(
-    Output(tree_map.html_id, 'figure'),
-    Input(map_boxplot.html_id, 'selectedData')
-)
-def update_tree_map(selectedData):
-    if selectedData is None:
-        return tree_map.update(None)
-    else:
-        return tree_map.update(selectedData)
+    if tree_map_selected_data is not None:
+        filter_string = tree_map_selected_data['points'][0]['label']
+        df = df[df['processed'].str.contains(filter_string, case=False).fillna(False)]
+        print(len(df))
+
+
+
+    return map_boxplot.update(df), tree_map.update(df)
+    
 
 @app.callback(
     Output("tab1-content", "children"),
