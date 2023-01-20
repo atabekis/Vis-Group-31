@@ -510,16 +510,52 @@ def update_markdown(open_click, close_click):
 
 
 @app.callback(
-    Output(map_boxplot.html_id, "figure"), [
+    [
+        Output(map_boxplot.html_id, "figure"),
+        #Output(tree_map.html_id, "figure")
+    ]
+    , [
         Input("select-neighbourhood-group", "value"),
         Input("select-neighbourhood", "value"),
         Input('price-range-slider', "value"),
-        Input('instant-bookable', "value"),
+        Input('instant-bookable', "value"), #TODO: change instant bookable to treemap box count?
         Input('service-fee-range-slider', 'value')
     ])
-def update_mapboxplot(neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range):
-    return map_boxplot.update(neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range)
+def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range):
+    #process data
+    df = data.df.copy()
+    # filter data on chosen groups
+    if neighbourhood_group != 'All':
+        df = df.loc[df['neighbourhood_group'] == neighbourhood_group]
 
+    if neighbourhood != 'All':
+        df = df.loc[df['neighbourhood'] == neighbourhood]
+
+    # filter data according to the given price range
+    min_price_mask = df["price"] >= price_range[0]
+    max_price_mask = df["price"] <= price_range[1]
+    df = df[min_price_mask & max_price_mask]
+    # print(data)
+    # filter data according to the given service fee range
+    min_service_mask = df["service_fee"] >= service_fee_range[0]
+    max_service_mask = df["service_fee"] <= service_fee_range[1]
+    df = df[min_service_mask & max_service_mask]
+
+    # filter for instant book-ability
+    df = df[df["instant_bookable"] == inst_bookable]
+
+    return map_boxplot.update(data)#, tree_map.update(data, None)
+    
+
+@app.callback(
+    Output(tree_map.html_id, 'figure'),
+    Input(map_boxplot.html_id, 'selectedData')
+)
+def update_tree_map(selectedData):
+    if selectedData is None:
+        return tree_map.update(None)
+    else:
+        return tree_map.update(selectedData)
 
 @app.callback(
     Output("tab1-content", "children"),
@@ -528,16 +564,6 @@ def update_mapboxplot(neighbourhood_group, neighbourhood, price_range, inst_book
 def update_neighbourhoods(neighbourhood):
     return [build_mapbox_controls(neighbourhood)]
 
-
-@app.callback(
-    Output(map_choropleth.html_id, 'figure'),
-    Input('choropleth-dropdown', 'value'),
-
-)
-def update_map_choropleth(value):
-    return map_choropleth.update(value)
-
-
 @app.callback(
     Output("data-display", "children"),
     Input(map_boxplot.html_id, 'clickData')
@@ -545,6 +571,13 @@ def update_map_choropleth(value):
 def update_data_display(clickData):
     return build_mapbox_info_display(clickData)
 
+
+@app.callback(
+    Output(map_choropleth.html_id, 'figure'),
+    Input('choropleth-dropdown', 'value'),
+)
+def update_map_choropleth(value):
+    return map_choropleth.update(value)
 
 @app.callback(
     Output(map_barchart.html_id, 'figure'), [
@@ -561,15 +594,7 @@ def update_map_barchart(clickData, dropdown_choice, startup, map_dropdown):
         name = clickData['points'][0]['location']
         return map_barchart.update(name, dropdown_choice, map_dropdown)
 
-@app.callback(
-    Output(tree_map.html_id, 'figure'),
-    Input(map_boxplot.html_id, 'selectedData')
-)
-def update_tree_map(selectedData):
-    if selectedData is None:
-        return tree_map.update(None)
-    else:
-        return tree_map.update(selectedData)
+
 
 
 app.run_server(debug=False)

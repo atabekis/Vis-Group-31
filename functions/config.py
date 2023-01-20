@@ -67,14 +67,19 @@ def get_service_fee():
     return int(min), int(max)
 
 
-def count_words(selection_data, count):
+def count_words(df, selection_data, count):
+    
     if selection_data is not None:        
         selection_list = selection_data['points']
         long_lat_list = []
         for point in selection_list:
-            long_lat_list.append((point['lon','lat']))
+            lon = point['lon']
+            lat = point['lat']
+            long_lat_list.append((lon,lat))
+        
+        filtered_data = df[df[['lon', 'lat']].apply(tuple, axis=1).isin(long_lat_list)]
     else:
-        filtered_data = data.copy()     
+        filtered_data = df.copy()     
 
     processed_words = filtered_data['processed'].to_list()
     clean = []

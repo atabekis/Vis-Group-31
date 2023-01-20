@@ -17,7 +17,7 @@ class TreeMap(html.Div):
             ]
         )
 
-    def update(self, selection_data):
+    def update(self, data, selection_data):
         bin_count = 30
 
         if selection_data is not None:

@@ -17,28 +17,30 @@ class Mapboxplot(html.Div):
         )
 
 
-    def update(self, neighbourhood_group, neighbourhood, price_range, inst_bookable,
-               service_fee_range):  # , selected_data):
-        data = self.df.copy()
-        # filter data on chosen groups
-        if neighbourhood_group != 'All':
-            data = data.loc[data['neighbourhood_group'] == neighbourhood_group]
+    def update(self, data): #neighbourhood_group, neighbourhood, price_range, inst_bookable,
+            #    service_fee_range):  # , selected_data):
+        
+        
+        # data = self.df.copy()
+        # # filter data on chosen groups
+        # if neighbourhood_group != 'All':
+        #     data = data.loc[data['neighbourhood_group'] == neighbourhood_group]
 
-        if neighbourhood != 'All':
-            data = data.loc[data['neighbourhood'] == neighbourhood]
+        # if neighbourhood != 'All':
+        #     data = data.loc[data['neighbourhood'] == neighbourhood]
 
-        # filter data according to the given price range
-        min_price_mask = data["price"] >= price_range[0]
-        max_price_mask = data["price"] <= price_range[1]
-        data = data[min_price_mask & max_price_mask]
-        # print(data)
-        # filter data according to the given service fee range
-        min_service_mask = data["service_fee"] >= service_fee_range[0]
-        max_service_mask = data["service_fee"] <= service_fee_range[1]
-        data = data[min_service_mask & max_service_mask]
+        # # filter data according to the given price range
+        # min_price_mask = data["price"] >= price_range[0]
+        # max_price_mask = data["price"] <= price_range[1]
+        # data = data[min_price_mask & max_price_mask]
+        # # print(data)
+        # # filter data according to the given service fee range
+        # min_service_mask = data["service_fee"] >= service_fee_range[0]
+        # max_service_mask = data["service_fee"] <= service_fee_range[1]
+        # data = data[min_service_mask & max_service_mask]
 
-        # filter for instant book-ability
-        data = data[data["instant_bookable"] == inst_bookable]
+        # # filter for instant book-ability
+        # data = data[data["instant_bookable"] == inst_bookable]
 
 
 
