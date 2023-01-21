@@ -18,9 +18,18 @@ class TreeMap(html.Div):
         )
 
     def update(self, data):
-        bin_count = 30
 
-        df = count_words(data, 500)[:bin_count]
+        df = count_words(data, 500)
+
+        #sort by descending order
+        df.sort_values(by='count',inplace=True, ascending=False)
+        print(df)
+
+        #take the first 30 values
+        bin_count = 30
+        if len(df) > 30:
+            df = df[:bin_count]
+            print(df)
         
         
 

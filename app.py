@@ -514,7 +514,7 @@ def update_markdown(open_click, close_click):
         Output(map_boxplot.html_id, "figure"),
         Output(tree_map.html_id, "figure")
     ]
-    , [
+    ,[
         Input("select-neighbourhood-group", "value"),
         Input("select-neighbourhood", "value"),
         Input('price-range-slider', "value"),
@@ -522,12 +522,29 @@ def update_markdown(open_click, close_click):
         Input('service-fee-range-slider', 'value'),
         Input(map_boxplot.html_id, 'selectedData'),
         Input(tree_map.html_id, 'clickData'),
-        Input(map_boxplot.df, )
+        Input(map_boxplot.html_id, "figure")
     ])
-def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, inst_bookable, service_fee_range, map_box_selected_data, tree_map_selected_data, current_data):
+def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range,
+inst_bookable, service_fee_range, map_box_selected_data, tree_map_selected_data,
+current_data):
     #process data
-    print(current_data)
     df = data.copy()
+
+    if tree_map_selected_data is not None:
+        filter_string = tree_map_selected_data['points'][0]['label']
+        df = df[df['processed'].str.contains(filter_string, case=False).fillna(False)]
+        
+        long_lat_list = []
+        for i in range(len(current_data['data'][0]['lat'])):
+            long_lat_list.append(
+                (
+                    current_data['data'][0]['lon'][i],
+                    current_data['data'][0]['lat'][i]
+                )
+            )
+
+        df = df[df[['long', 'lat']].apply(tuple, axis=1).isin(long_lat_list)]
+    
     # filter data on chosen groups
     if neighbourhood_group != 'All':
         df = df.loc[df['neighbourhood_group'] == neighbourhood_group]
@@ -558,12 +575,7 @@ def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, i
         
         df = df[df[['long', 'lat']].apply(tuple, axis=1).isin(long_lat_list)]
 
-    if tree_map_selected_data is not None:
-        filter_string = tree_map_selected_data['points'][0]['label']
-        df = df[df['processed'].str.contains(filter_string, case=False).fillna(False)]
-        print(len(df))
-
-
+    
 
     return map_boxplot.update(df), tree_map.update(df)
     

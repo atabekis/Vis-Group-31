@@ -46,26 +46,5 @@ class Mapboxplot(html.Div):
             paper_bgcolor="#323130",
             # plot_bgcolor="#323130"
         )
-        # self.fig.update_traces(
-        #     hovertemplate=None,
-        #     hoverinfo = 'skip')
 
-        # highlight points chosen in other graph(s)
-        # if selected_data is None:
-        #     selected_index = data.index #shows all
-        # else:
-        #     selected_index = [ #show only selected indices
-        #         x.get('pointIndex', None)
-        #         for x in selected_data['points']
-        #     ]
-
-        # self.fig.data[0].update(
-        #     selectedpoints = selected_index,
-
-        #     # color of selected points
-        #     selected=dict(marker=dict(color='BLUE')),
-
-        #     # color of unselected pts
-        #     unselected=dict(marker=dict(color='rgb(200,200,200)', opacity=0.9))
-        # )
         return self.fig
