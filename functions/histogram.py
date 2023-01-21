@@ -1,10 +1,8 @@
 from dash import dcc, html
 import plotly.express as px
-from plotly.graph_objects import Layout
-import plotly.graph_objects as go
 
 
-class Barchart(html.Div):
+class Histogram(html.Div):
     def __init__(self, name, df):
         self.fig = None
         self.html_id = name.lower().replace(" ", "-")
@@ -12,7 +10,7 @@ class Barchart(html.Div):
 
         super().__init__(
             className="graph_card",
-            style={'backgroundColor': "#323130"},
+            style={'backgroundColor': "#191a1a"},
             children=[
                 dcc.Graph(id=self.html_id)
             ]
@@ -28,46 +26,28 @@ class Barchart(html.Div):
             else:
                 data = data[data['NTA'] == NTA]
 
-
-            ### histogram:
+            # Histogram:
             self.fig = px.histogram(
                 data,
-                #y='price',
                 x=dropdown_choice,
                 nbins=50,
-                # color='red',
-                color_discrete_sequence=['#f3204f']
+                color_discrete_sequence=['#f3204f'],
+                labels={'count': 'Count', 'price': 'Price', 'service_fee': 'Service Fee',
+                        'reviews_per_month': 'Number of Monthly Reviews'},
             )
 
             self.fig.update_layout(
                 margin={"r": 0, "t": 0, "l": 0, "b": 0},
-                paper_bgcolor="#323130",
-                plot_bgcolor="#323130",
+                paper_bgcolor="#191a1a",
+                plot_bgcolor="#191a1a",
                 font_color="white",
                 yaxis={
                     'showgrid': False
-                    },
-                bargap=0.1
+                },
+                bargap=0.1,
+                yaxis_title='Count',
+
             )
-            ### original barchart:
-            # self.fig = px.bar(
-            #     data,
-            #     x='id',
-            #     y=dropdown_choice)
-
-            # self.fig.update_layout(
-            #     margin={"r": 0, "t": 0, "l": 0, "b": 0},
-            #     paper_bgcolor="#323130",
-            #     plot_bgcolor="#323130",
-            #     font_color="white",
-            #     xaxis={
-            #         'showgrid': False,
-            #     },
-            #     yaxis={
-            #         'showgrid': False
-            #     }
-
-            # )
 
             return self.fig
 
@@ -75,8 +55,8 @@ class Barchart(html.Div):
 
             return {
                 "layout": {
-                    'paper_bgcolor': "#323130",
-                    'plot_bgcolor' : "#323130",
+                    'paper_bgcolor': "#191a1a",
+                    'plot_bgcolor': "#191a1a",
 
                     "xaxis": {
                         "visible": False

@@ -5,6 +5,7 @@ from nltk.tokenize import word_tokenize
 import nltk.data
 from nltk.stem import WordNetLemmatizer, PorterStemmer, SnowballStemmer
 import re
+import numpy as np
 
 
 def create_nta(df):
@@ -81,10 +82,9 @@ def get_keywords(dataframe):
 
 
 def clean_csv():
-
     print('Cleaning the dataset...')
 
-    df1 = pd.read_csv('../data/airbnb_open_data.csv', low_memory=False)
+    df1 = pd.read_csv('../Data/airbnb_open_data.csv', low_memory=False)
 
     df1 = df1.fillna(0)
     df1.rename(columns=lambda x: (x.replace(' ', '_')).lower(), inplace=True)
@@ -100,6 +100,20 @@ def clean_csv():
 
     df1['neighbourhood_group'] = df1['neighbourhood_group'].str.title()
 
+    df1['neighbourhood_group'] = df1['neighbourhood_group'].replace(np.nan, 'None')
+
+    for index, row in df1.iterrows():
+        neighbourhood, group = row['neighbourhood'], row['neighbourhood_group']
+        if group == 'None':
+            group_new = (df1[df1['neighbourhood'] == neighbourhood].iloc[7]['neighbourhood_group'])
+            df1.at[index, 'neighbourhood_group'] = group_new
+
+    df1 = df1.drop(columns=['host_id', 'host_name', 'license'])
+
+    cols = ['lat', 'long', 'instant_bookable']
+
+    df1[cols] = df1[cols].replace(0, np.nan)
+
     print('Preprocessing the text...')
 
     df_processed = get_keywords(df1)
@@ -108,7 +122,7 @@ def clean_csv():
 
     df_nta = create_nta(df_processed)
 
-    df_nta.to_csv('../data/airbnb_open_data_clean.csv')
+    df_nta.to_csv('../Data/airbnb_open_data_clean.csv')
 
 
 clean_csv()
