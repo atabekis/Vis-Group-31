@@ -43,8 +43,7 @@ class Mapboxplot(html.Div):
                                )
         self.fig.update_layout(
             margin={"r": 0, "t": 0, "l": 0, "b": 0},
-            paper_bgcolor="#323130",
-            # plot_bgcolor="#323130"
+            paper_bgcolor="#323130"
         )
 
         return self.fig
