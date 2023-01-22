@@ -41,7 +41,8 @@ class TreeMap(html.Div):
             color='count',
             color_continuous_scale= 'matter',
             custom_data=['count', 'word'],
-            hover_name='word'
+            hover_name='word',
+            labels={'count': 'Count'}
 
         )
 
@@ -59,6 +60,7 @@ class TreeMap(html.Div):
             template="plotly_white",
             paper_bgcolor="#191a1a",
             height=300,
+            font_color='#bfbbbb'
 
             # width=1000
         )
