@@ -114,6 +114,8 @@ def clean_csv():
 
     df1[cols] = df1[cols].replace(0, np.nan)
 
+    df1['house_rules'] = df1['house_rules'].replace(0, 'No rules provided')
+
     print('Preprocessing the text...')
 
     df_processed = get_keywords(df1)

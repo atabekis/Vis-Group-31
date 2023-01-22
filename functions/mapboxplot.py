@@ -31,19 +31,28 @@ class Mapboxplot(html.Div):
             hover_name="name",
             # hover_data=["room_type", "price"],
             color='price',
-            color_continuous_scale=px.colors.sequential.Brwnyl,
+            color_continuous_scale='matter',
+            opacity=0.8,
             range_color=(0, 1200),
             #zoom=10,
             height=500,
-            # labels={'price': 'Price'}
+            labels={'price': 'Price'},
+            custom_data=['name']
         )
 
         self.fig.update_layout(mapbox_accesstoken=token,
-                               mapbox_style="dark"
+                               mapbox_style="dark",
+                               font_color='#bfbbbb'
                                )
         self.fig.update_layout(
             margin={"r": 0, "t": 0, "l": 0, "b": 0},
-            paper_bgcolor="#323130"
+            paper_bgcolor="#191a1a"
+        )
+
+        self.fig.update_traces(
+            hovertemplate="<br>".join([
+                '<b>%{customdata[0]}</b>',
+            ])
         )
 
         return self.fig

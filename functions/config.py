@@ -20,6 +20,10 @@ data = pd.read_csv("Data/airbnb_open_data_clean.csv", low_memory=False)
 # returns the neighbourhood groups in the data
 def get_neighbourhood_groups():
     neighbourhood_group = data['neighbourhood_group'].unique()
+    neighbourhood_group = list(neighbourhood_group)
+    neighbourhood_group.remove(np.nan)
+    neighbourhood_group.remove('Brookln')
+    neighbourhood_group.remove('Manhatan')
     neighbourhood_group = np.insert(neighbourhood_group, 0, "All")
     return neighbourhood_group
 
@@ -58,6 +62,8 @@ def get_price_min_max():
 # returns the possible values of instant bookability
 def get_inst_bookable():
     bookable = data['instant_bookable'].unique()
+    bookable = list(bookable)
+    bookable.remove('0')
     return bookable
 
 

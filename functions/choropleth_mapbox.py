@@ -49,22 +49,31 @@ class Choropleth(html.Div):
         # draw the figure
         self.fig = px.choropleth_mapbox(data, geojson=file, locations=location, color='price',
                                         featureidkey=feature,
-                                        color_continuous_scale="Viridis",
+                                        color_continuous_scale="matter",
                                         range_color=(0, 1200),
                                         mapbox_style="carto-positron",
                                         zoom=10, center={"lat": 40.73963, "lon": -73.98166},
-                                        opacity=0.5,
-                                        labels={'price': 'Average price'}
+                                        opacity=0.8,
+                                        labels={'price': 'Average price'},
+                                        custom_data=['NTA', 'price']
                                         )
+
 
         self.fig.update_layout(mapbox_accesstoken=token,
                                mapbox_style="dark",
-                               font_color="white"
+                               font_color="#bfbbbb"
                                )
         self.fig.update_layout(
             margin={"r": 0, "t": 0, "l": 0, "b": 0},
-            paper_bgcolor="#323130",
+            paper_bgcolor="#191a1a",
             # plot_bgcolor="#323130"
+        )
+
+        self.fig.update_traces(
+            hovertemplate="<br>".join([
+                'Name: <b>%{customdata[0]}</b>',
+                "Average Price: $%{customdata[1]}"
+            ])
         )
 
         return self.fig

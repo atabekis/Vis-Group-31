@@ -66,15 +66,14 @@ class Histogram(html.Div):
                     },
                     "annotations": [
                         {
-                            "text": "Click on an area or i'll beat your ass",
+                            "text": f"Click on the Map to Select Neighbourhoods/Boroughs",
                             "xref": "paper",
                             "yref": "paper",
                             "showarrow": False,
                             "font": {
-                                "size": 20,
+                                "size": 15,
                                 'color': '#bfbbbb'
                             },
-
                         }
                     ],
                 }
