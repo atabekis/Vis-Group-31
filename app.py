@@ -1,6 +1,7 @@
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
+from dash.exceptions import PreventUpdate
 import numpy as np
 import pandas as pd
 from textwrap import dedent
@@ -39,6 +40,7 @@ This app.py file is seperated into multiple building functions for the construct
 
 
 app = dash.Dash(__name__)
+app.title = 'JBI100'
 
 
 def build_banner():
@@ -161,7 +163,14 @@ def build_tabs():
                                 children=[
                                     html.Div(
                                         className="eight columns",
-                                        children=map_boxplot
+                                        # children=map_boxplot
+                                        children=[
+                                            dcc.Loading(
+                                                id='loading-boxplot',
+                                                type='graph',
+                                                children=[map_boxplot]
+                                            )
+                                        ]
                                     ),
                                     html.Div(
                                         id='data-display',
@@ -179,7 +188,14 @@ def build_tabs():
                                     html.Br(),
                                     html.Div(
                                         className='twelve columns',
-                                        children=tree_map
+                                        # children=tree_map
+                                        children=[
+                                            dcc.Loading(
+                                                id='loading-treemap',
+                                                type='graph',
+                                                children=[tree_map]
+                                            )
+                                        ]
                                     )
                                 ]
                             )
@@ -325,7 +341,7 @@ def build_mapbox_controls(neighbourhood_name):
     # Dropdown variables:
     neighbourhood_group = config.get_neighbourhood_groups()
     neighbourhood = config.get_neighbourhood()
-    instant_bookability = config.get_inst_bookable()
+    # instant_bookability = config.get_inst_bookable()
 
     # Slider variables
     min_price, max_price = config.get_price_min_max()
@@ -346,6 +362,7 @@ def build_mapbox_controls(neighbourhood_name):
                                           options=[{"label": i, "value": i} for i in neighbourhood_group],
                                           value=neighbourhood_group[
                                               np.where(neighbourhood_group == neighbourhood_name)[0][0]],
+                                          # value='All'
                                       )
                                   ]
                                   ),
@@ -395,14 +412,25 @@ def build_mapbox_controls(neighbourhood_name):
                                       )
                                   ]
                                   ),
-                         html.Div(style={'width': '20%', 'height': '100px', 'margin': '5px'},
+                         html.Div(style={'width': '12%', 'height': '100px', 'margin': '5px'},
                                   children=[
-                                      html.Label("Instantly Bookable"),
-                                      dcc.Dropdown(
-                                          style={"border": "0px solid black"},
-                                          id='instant-bookable',
-                                          options=[{"label": i, "value": i} for i in instant_bookability],
-                                          value=instant_bookability[0]
+                                      # html.Label("Reset Graphs"),
+                                      html.Button(
+                                          'Reset Graphs',
+                                          id='reset-graphs-button',
+                                          n_clicks=0,
+                                          style={'width': '100%', 'margin': '20px'}
+                                      )
+                                  ]
+                                  ),
+                         html.Div(style={'width': '12%', 'height': '100px', 'margin': '5px'},
+                                  children=[
+                                      # html.Label("Reset Filters"),
+                                      html.Button(
+                                          'Reset Controls',
+                                          id='reset-controls-button',
+                                          n_clicks=0,
+                                          style={'width': '100%', 'margin': '20px'}
                                       )
                                   ]
                                   )
@@ -434,7 +462,7 @@ def build_choropleth_tabs():
                         clearable=False, searchable=False
                     ),
                     dcc.Loading(
-                        id='loading-1',
+                        id='loading-choropleth',
                         type='graph',
                         children=[map_choropleth]
                     )
@@ -455,7 +483,7 @@ def build_choropleth_tabs():
                         clearable=False, searchable=False
                     ),
                     dcc.Loading(
-                        id='loading-2',
+                        id='loading-histogram',
                         type='graph',
                         children=[map_histogram]
 
@@ -508,30 +536,30 @@ def update_markdown(open_click, close_click):
     return {'display': 'none'}
 
 
-@app.callback(    [
-        Output(map_boxplot.html_id, "figure"),
-        Output(tree_map.html_id, "figure")
-    ]
-    ,[
+@app.callback([
+    Output(map_boxplot.html_id, "figure"),
+    Output(tree_map.html_id, "figure")
+]
+    , [
         Input("select-neighbourhood-group", "value"),
         Input("select-neighbourhood", "value"),
         Input('price-range-slider', "value"),
-        Input('instant-bookable', "value"), #TODO: change instant bookable to treemap box count?
         Input('service-fee-range-slider', 'value'),
         Input(map_boxplot.html_id, 'selectedData'),
         Input(tree_map.html_id, 'clickData'),
-        Input(map_boxplot.html_id, "figure")
-    ])
-def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range,
-inst_bookable, service_fee_range, map_box_selected_data, tree_map_selected_data,
-current_data):
-    #process data
-    df = data.copy()
+        Input(map_boxplot.html_id, "figure"),
+        Input('reset-graphs-button', "n_clicks")
 
+    ])
+def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, service_fee_range, map_box_selected_data,
+                              tree_map_selected_data, current_data, click):
+    # process data
+    df = data.copy()
     if tree_map_selected_data is not None:
         filter_string = tree_map_selected_data['points'][0]['label']
+
         df = df[df['processed'].str.contains(filter_string, case=False).fillna(False)]
-        
+
         long_lat_list = []
         for i in range(len(current_data['data'][0]['lat'])):
             long_lat_list.append(
@@ -542,7 +570,7 @@ current_data):
             )
 
         df = df[df[['long', 'lat']].apply(tuple, axis=1).isin(long_lat_list)]
-    
+
     # filter data on chosen groups
     if neighbourhood_group != 'All':
         df = df.loc[df['neighbourhood_group'] == neighbourhood_group]
@@ -561,26 +589,39 @@ current_data):
     df = df[min_service_mask & max_service_mask]
 
     # filter for instant book-ability
-    df = df[df["instant_bookable"] == inst_bookable]
+    # df = df[df["instant_bookable"] == inst_bookable]
 
-    if map_box_selected_data is not None:        
+    if map_box_selected_data is not None:
         selection_list = map_box_selected_data['points']
         long_lat_list = []
         for point in selection_list:
             lon = point['lon']
             lat = point['lat']
-            long_lat_list.append((lon,lat))
-        
+            long_lat_list.append((lon, lat))
+
         df = df[df[['long', 'lat']].apply(tuple, axis=1).isin(long_lat_list)]
+
+    callback = dash.callback_context
+    if callback.triggered:
+        prop_id = callback.triggered[0]['prop_id'].split('.')[0]
+        if prop_id == 'reset-graphs-button':
+            return [map_boxplot.update(data), tree_map.update(data)]
 
     return map_boxplot.update(df), tree_map.update(df)
 
+
 @app.callback(
     Output("tab1-content", "children"),
-    Input("select-neighbourhood-group", "value")
+    Input("select-neighbourhood-group", "value"),
+    Input('reset-controls-button', 'n_clicks')
 )
-def update_neighbourhoods(neighbourhood):
-    return [build_mapbox_controls(neighbourhood)]
+def update_neighbourhoods(neighbourhood, click):
+    callback = dash.callback_context
+    if callback.triggered:
+        prop_id = callback.triggered[0]['prop_id'].split('.')[0]
+        if prop_id == 'reset-controls-button':
+            return [build_mapbox_controls('All')]
+    return build_mapbox_controls(neighbourhood)
 
 
 @app.callback(
@@ -614,4 +655,4 @@ def update_map_histogram(clickData, dropdown_choice, startup, map_dropdown):
         return map_histogram.update(name, dropdown_choice, map_dropdown)
 
 
-app.run_server(debug=False)
+app.run_server(debug=False, port='3131')
