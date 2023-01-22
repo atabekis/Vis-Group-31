@@ -42,8 +42,6 @@ class Choropleth(html.Div):
             location = 'neighbourhood_group'
             file = boroughs
 
-
-
         token = "pk.eyJ1IjoibHVjdG9ydGlrZSIsImEiOiJjbGJnZHJncDYwZmNkM29zMmN6ZDFweXVhIn0.f9rwUtWIeGiwuJTPKzuMUA"
 
         # draw the figure
@@ -57,7 +55,6 @@ class Choropleth(html.Div):
                                         labels={'price': 'Average price'},
                                         custom_data=['NTA', 'price']
                                         )
-
 
         self.fig.update_layout(mapbox_accesstoken=token,
                                mapbox_style="dark",

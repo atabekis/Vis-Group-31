@@ -9,6 +9,7 @@ class TreeMap(html.Div):
     def __init__(self, name, df):
         self.html_id = name
         self.df = df
+        self.clear = df
 
         super().__init__(
             className="graph_card",
@@ -21,6 +22,8 @@ class TreeMap(html.Div):
     def update(self, data):
 
         df = count_words(data, 50)
+
+
 
         #sort by descending order
         df.sort_values(by='count',inplace=True, ascending=False)
