@@ -21,18 +21,12 @@ class TreeMap(html.Div):
 
     def update(self, data):
 
-        df = count_words(data, 50)
+        df = count_words(data, 30)
 
 
 
         #sort by descending order
         df.sort_values(by='count',inplace=True, ascending=False)
-        # print(df)
-
-        #take the first 30 values
-        bin_count = 30
-        if len(df) > 30:
-            df = df[:bin_count]
         
         fig = px.treemap(
             df,

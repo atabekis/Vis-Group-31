@@ -9,7 +9,7 @@ import numpy as np
 
 
 def create_nta(df):
-    with open('../data/neighbourhoods.geojson') as f:
+    with open('./data/neighbourhoods.geojson') as f:
         neighbourhoods = json.load(f)
 
     ntas = []
@@ -31,8 +31,6 @@ def create_nta(df):
 
     return df
 
-
-# clean_csv()
 
 def preprocess(text, banned):
     lemmatize = WordNetLemmatizer()
@@ -84,19 +82,22 @@ def get_keywords(dataframe):
 def clean_csv():
     print('Cleaning the dataset...')
 
-    df1 = pd.read_csv('../Data/airbnb_open_data.csv', low_memory=False)
+    df1 = pd.read_csv('./data/airbnb_open_data.csv', low_memory=False)
 
     df1 = df1.fillna(0)
     df1.rename(columns=lambda x: (x.replace(' ', '_')).lower(), inplace=True)
 
     df1['price'] = (df1['price'].replace({'\$': '', ',': ''}, regex=True)).astype(int)
+    #drop the rows that have no price (equal to 0)
+    df1 = df1[df1["price"] != 0]
+
     df1['service_fee'] = (df1['service_fee'].replace({'\$': '', ',': ''}, regex=True)).astype(int)
     df1 = df1.drop(['country', 'country_code'], axis=1)
     df1['last_review'] = pd.to_datetime(df1.last_review)
 
     df1 = df1.astype({'minimum_nights': int, 'number_of_reviews': int, 'reviews_per_month': int,
                       'review_rate_number': int, 'availability_365': int, 'calculated_host_listings_count': int,
-                      'construction_year': int})
+                      'construction_year': int, 'instant_bookable' : str})
 
     df1['neighbourhood_group'] = df1['neighbourhood_group'].str.title()
 
@@ -107,14 +108,33 @@ def clean_csv():
         if group == 'None':
             group_new = (df1[df1['neighbourhood'] == neighbourhood].iloc[7]['neighbourhood_group'])
             df1.at[index, 'neighbourhood_group'] = group_new
+        elif neighbourhood == "None":
+            neighbourhood_new = (df1[df1['neighbourhood_group'] == group].iloc[7]['neighbourhood'])
+            df1.at[index, 'neighbourhood'] = neighbourhood_new
+        elif group == "Brookln":
+            df1.at[index, 'neighbourhood_group'] = "Brooklyn"
+        elif group == "Manhatan":
+            df1.at[index, 'neighbourhood_group'] = "Manhattan"
+
 
     df1 = df1.drop(columns=['host_id', 'host_name', 'license'])
 
-    cols = ['lat', 'long', 'instant_bookable']
+    #replace instant bookable nan values with default "TRUE"
+    df1['instant_bookable'] = df1['instant_bookable'].replace("0", "True")
 
-    df1[cols] = df1[cols].replace(0, np.nan)
+    #drop rows that do not have lat and long values
+    df1 = df1[df1['lat'] != 0]
+    df1 = df1[df1['lat'] != 0]
 
+    #Fill rules
     df1['house_rules'] = df1['house_rules'].replace(0, 'No rules provided')
+    #Fill name
+    df1['name'] = df1['name'].replace(0, "No name Provided")
+    #Fill host identity
+    df1['host_identity_verified'] = df1['host_identity_verified'].replace(0, 'unconfirmed')
+    #fill cancellation policy
+    df1['cancellation_policy'] = df1['cancellation_policy'].replace(0, 'Not Specified')
+
 
     print('Preprocessing the text...')
 
@@ -124,7 +144,7 @@ def clean_csv():
 
     df_nta = create_nta(df_processed)
 
-    df_nta.to_csv('../Data/airbnb_open_data_clean.csv')
+    df_nta.to_csv('./data/airbnb_open_data_clean.csv')
 
 
 clean_csv()

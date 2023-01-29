@@ -40,13 +40,25 @@ class Mapboxplot(html.Div):
             custom_data=['name']
         )
 
-        self.fig.update_layout(mapbox_accesstoken=token,
-                               mapbox_style="dark",
-                               font_color='#bfbbbb'
-                               )
+        lat_range = max(self.df['lat']) - min(self.df['lat'])
+        lon_range = max(self.df['long']) - min(self.df['long'])
+        
+        zoom_level = 10
+        zoom_scaler = (1/(lat_range + lon_range))
+
+        if zoom_scaler > 5:
+            zoom_level = 14
+        elif zoom_scaler > 2:
+            zoom_level = 12 
+
         self.fig.update_layout(
+            mapbox_accesstoken=token,
+            mapbox_style="dark",
+            font_color='#bfbbbb',
+            mapbox_zoom=zoom_level,
+            mapbox_center={"lat": self.df['lat'].mean(), "lon": self.df['long'].mean()},
             margin={"r": 0, "t": 0, "l": 0, "b": 0},
-            paper_bgcolor="#191a1a"
+            paper_bgcolor="#191a1a",
         )
 
         self.fig.update_traces(

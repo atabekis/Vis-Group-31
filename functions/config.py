@@ -21,9 +21,13 @@ data = pd.read_csv("Data/airbnb_open_data_clean.csv", low_memory=False)
 def get_neighbourhood_groups():
     neighbourhood_group = data['neighbourhood_group'].unique()
     neighbourhood_group = list(neighbourhood_group)
-    neighbourhood_group.remove(np.nan)
-    neighbourhood_group.remove('Brookln')
-    neighbourhood_group.remove('Manhatan')
+    try:
+        neighbourhood_group.remove(np.nan)
+        neighbourhood_group.remove('Brookln')
+        neighbourhood_group.remove('Manhatan')
+    except:
+        print("Exception occurred")
+
     neighbourhood_group = np.insert(neighbourhood_group, 0, "All")
     return neighbourhood_group
 
@@ -37,18 +41,17 @@ def get_neighbourhood():
     for key in neighbourhoods:
         neighbourhoods[key].append("All")
 
-    with open("Data/airbnb_open_data_clean.csv", encoding='utf-8') as f:
+    with open("./data/airbnb_open_data_clean.csv", encoding='utf-8') as f:
         reader = csv.reader(f)
         next(reader)
         for line in reader:
-            neighbourhood = line[7]
-            group = line[6]
+            neighbourhood = line[5]
+            group = line[4]
 
             if (group in neighbourhoods.keys()) and (neighbourhood not in neighbourhoods[group]):
                 if neighbourhood != '0':
                     neighbourhoods['All'].append(neighbourhood)
                     neighbourhoods[group].append(neighbourhood)
-
     return neighbourhoods
 
 
