@@ -29,9 +29,7 @@ This app.py file is seperated into multiple building functions for the construct
 # ------------------------------------------------------------------------------------------------------#
 # ------------------------------- main todos go here please ------------------------------------------- #
 # *: Not important, **: Important, ***: Very important
-# TODO: **************remove atas jokes xD
-# TODO: **Find a better way to graph the barchart + change color palette to match with the choropleth
-# TODO: * Add the new dependencies to requirements.txt
+# TODO: ***check in a clean python env for requirements
 # ------------------------------------------------------------------------------------------------------#
 
 
