@@ -2,12 +2,11 @@
 
 ## About this app
 
-You can use this as a basic template for your JBI100 visualization project.
+This visualisation tool has been made for course JBI100 by group 31
 
 ## Requirements
 
-* Python 3 (add it to your path (system variables) to make sure you can access it from the command prompt)
-* Git (https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
+* Please install the required packages in the requirements.txt file provided with the app
 
 ## How to run this app
 
