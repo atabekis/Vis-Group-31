@@ -3,11 +3,11 @@ import pandas as pd
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import nltk.data
-from nltk.stem import WordNetLemmatizer, PorterStemmer, SnowballStemmer
+from nltk.stem import WordNetLemmatizer
 import re
 import numpy as np
 
-
+#create the NTA column in the data
 def create_nta(df):
     with open('./data/neighbourhoods.geojson') as f:
         neighbourhoods = json.load(f)
@@ -31,7 +31,7 @@ def create_nta(df):
 
     return df
 
-
+#process the descriptions of the listings to create descriptive words specific to each listing
 def preprocess(text, banned):
     lemmatize = WordNetLemmatizer()
     stop_words = set(stopwords.words('english'))
@@ -48,7 +48,7 @@ def preprocess(text, banned):
 
     return " ".join(clean_words)
 
-
+#add the preprocessed text to the data
 def get_keywords(dataframe):
     # Check whether nltk has the required packages
     try:
@@ -78,31 +78,40 @@ def get_keywords(dataframe):
 
     return dataframe
 
-
+#clean the data from redundant data that will not be used
 def clean_csv():
     print('Cleaning the dataset...')
 
     df1 = pd.read_csv('./data/airbnb_open_data.csv', low_memory=False)
 
+    #fill na values with 0
     df1 = df1.fillna(0)
+    #rename columns
     df1.rename(columns=lambda x: (x.replace(' ', '_')).lower(), inplace=True)
 
+    #set the type of price values
     df1['price'] = (df1['price'].replace({'\$': '', ',': ''}, regex=True)).astype(int)
-    #drop the rows that have no price (equal to 0)
+    #drop the rows that have no price (equal to 0) since these can cause errors in processing
     df1 = df1[df1["price"] != 0]
 
+    #set the type of service fee
     df1['service_fee'] = (df1['service_fee'].replace({'\$': '', ',': ''}, regex=True)).astype(int)
+    #drop the country codes since all data is within US
     df1 = df1.drop(['country', 'country_code'], axis=1)
+    #set date and time to correct format
     df1['last_review'] = pd.to_datetime(df1.last_review)
 
+    #set the types of columns
     df1 = df1.astype({'minimum_nights': int, 'number_of_reviews': int, 'reviews_per_month': int,
                       'review_rate_number': int, 'availability_365': int, 'calculated_host_listings_count': int,
                       'construction_year': int, 'instant_bookable' : str})
 
+    #capitalise neighbourhood group names
     df1['neighbourhood_group'] = df1['neighbourhood_group'].str.title()
-
+    #replace nan values with None
     df1['neighbourhood_group'] = df1['neighbourhood_group'].replace(np.nan, 'None')
 
+    #fill in the missing neighbourhood and group names by backtracking the whole dataset
     for index, row in df1.iterrows():
         neighbourhood, group = row['neighbourhood'], row['neighbourhood_group']
         if group == 'None':
@@ -116,7 +125,7 @@ def clean_csv():
         elif group == "Manhatan":
             df1.at[index, 'neighbourhood_group'] = "Manhattan"
 
-
+    #drop columns that will not be needed
     df1 = df1.drop(columns=['host_id', 'host_name', 'license'])
 
     #replace instant bookable nan values with default "TRUE"

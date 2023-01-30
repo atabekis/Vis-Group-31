@@ -1,8 +1,10 @@
 from dash import dcc, html
 import plotly.express as px
 
-
+#class for Histogram figure
 class Histogram(html.Div):
+
+    #initialise the figure properties and assign dataframe
     def __init__(self, name, df):
         self.fig = None
         self.html_id = name.lower().replace(" ", "-")
@@ -16,11 +18,18 @@ class Histogram(html.Div):
             ]
         )
 
+    # Update function that will be called from callback functions
+    # Params:
+    #   NTA: registered neighbourhood
+    #   dropdown_choice: type of visualisation that has been chosen by the user
+    #   map_dropdown: Input from the other visualisation
     def update(self, NTA, dropdown_choice, map_dropdown):
 
+        #NTA is not None when a neighbourhood/borough has been chosen on the other visualisation
         if NTA is not None:
             data = self.df.copy()
 
+            #filter data according to the decision by the user
             if map_dropdown == 'boroughs':
                 data = data[data['neighbourhood_group'] == NTA]
             else:
@@ -35,7 +44,7 @@ class Histogram(html.Div):
                 labels={'count': 'Count', 'price': 'Price', 'service_fee': 'Service Fee',
                         'reviews_per_month': 'Number of Monthly Reviews'},
             )
-
+            #update the histogram
             self.fig.update_layout(
                 margin={"r": 0, "t": 0, "l": 0, "b": 0},
                 paper_bgcolor="#191a1a",
@@ -51,7 +60,8 @@ class Histogram(html.Div):
 
             return self.fig
 
-        else:
+        else: #if the NTA is none the neighbourhood or the borough has not been chosen therefore a text will be displayed
+              #asking the user too choose a neighbourhood/borough
 
             return {
                 "layout": {

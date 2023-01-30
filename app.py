@@ -29,18 +29,14 @@ This app.py file is seperated into multiple building functions for the construct
 # ------------------------------------------------------------------------------------------------------#
 # ------------------------------- main todos go here please ------------------------------------------- #
 # *: Not important, **: Important, ***: Very important
-
-# TODO: **Word/text processing should be graphed -> Bartan, Ata
-# TODO: Add the treemap -> Bartan
-# TODO: *Ata: To find a way to load in the graphs faster when pc is not plugged in lmao
-# TODO: *Select better color palette for application
+# TODO: **************remove atas jokes xD
 # TODO: **Find a better way to graph the barchart + change color palette to match with the choropleth
 # TODO: * Add the new dependencies to requirements.txt
 # ------------------------------------------------------------------------------------------------------#
 
 
 app = dash.Dash(__name__)
-app.title = 'JBI100'
+app.title = 'JBI100 Group 31'
 
 
 def build_banner():
@@ -53,11 +49,11 @@ def build_banner():
         id='banner',
         className='banner',
         children=[
-            html.H5('Somebody please end my suffering'),
+            html.H5('JBI100 Visualisation'),
 
             html.Button(
                 id='whats-this-button',
-                children="What's This?",
+                children="Further Information",
                 n_clicks=0),
             html.Img(src='assets/TUE.png'),
             html.H3('Group 31')
@@ -67,7 +63,7 @@ def build_banner():
 
 def build_explanation():
     """
-    Builds the markdown that pops up when the "What's this" button is pressed.
+    Builds the markdown that pops up when the "Further Information" button is pressed.
     :return: dash.html object
     """
     return html.Div(
@@ -92,8 +88,14 @@ def build_explanation():
                         className='markdown-text',
                         children=dcc.Markdown(
                             children=dedent("""
-                            IM WRITING THIS TO LET YOU KNOW THAT BARTAN IS A LITTLE BITCH
-                            AND I STAND WITH WHAT I SAY :)))
+                            This visualisation tool is made for investors looking for a neighbourhood/borough to invest in, fitting with their requirements.
+                            The tool allows the user to go through 2 tabs of visualisations.\n
+                            In the first tab Airbnb data can be explored per neighbourhood and borough in order to make it easier for the user to choose a
+                            starting location for their research.\n
+                            In the second tab the user can view every available property in Airbnb dataset on the new york map and can look into all properties
+                            of every listing.
+                            An accompanying treemap figure also assists the user to quickly filter for the most common words withing the chosen area of interest.
+
                             """)
                         )
                     )
@@ -118,7 +120,7 @@ def build_tabs():
                 value='tab1',
                 className='custom-tabs',
                 children=[
-                    dcc.Tab(
+                    dcc.Tab(                #Choropleth tab
                         id='tab1',
                         label='Choropleth',
                         value='tab1',
@@ -139,7 +141,7 @@ def build_tabs():
                             build_choropleth_tabs()
                         ]
                     ),
-                    dcc.Tab(
+                    dcc.Tab(            #Map box plot tab
                         id='tab2',
                         label='Mapbox',
                         value='tab2',
@@ -333,7 +335,7 @@ def build_mapbox_info_display(clickData):
 
 def build_mapbox_controls(neighbourhood_name):
     """
-    This builds the top part of the mapbox tab with three dropdowns and two sliders
+    This section builds the top part of the mapbox tab with three dropdowns and two sliders
     :param neighbourhood_name: One of the neighbourhood names from the csv file
     :return: dash.html object
     """
@@ -442,7 +444,7 @@ def build_mapbox_controls(neighbourhood_name):
 
 def build_choropleth_tabs():
     """
-    This builds the page for choropleth, histogram and their controls.
+    This section builds the page for choropleth, histogram and their controls.
     :return: dash.html object
     """
     return html.Div(
@@ -523,6 +525,8 @@ app.layout = html.Div(
 # ------------------------------------------------------------------------------------------------------#
 # ----------------------- Setting the callback functions for interactions ----------------------------- #
 # ------------------------------------------------------------------------------------------------------#
+
+#further information button
 @app.callback(
     Output('markdown', 'style'),
     Input('whats-this-button', 'n_clicks'),
@@ -535,7 +539,7 @@ def update_markdown(open_click, close_click):
             return {'display': 'block'}
     return {'display': 'none'}
 
-
+#update treemap and mapboxplot figures
 @app.callback([
     Output(map_boxplot.html_id, "figure"),
     Output(tree_map.html_id, "figure")
@@ -582,14 +586,11 @@ def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, s
     min_price_mask = df["price"] >= price_range[0]
     max_price_mask = df["price"] <= price_range[1]
     df = df[min_price_mask & max_price_mask]
-    # print(data)
+    
     # filter data according to the given service fee range
     min_service_mask = df["service_fee"] >= service_fee_range[0]
     max_service_mask = df["service_fee"] <= service_fee_range[1]
     df = df[min_service_mask & max_service_mask]
-
-    # filter for instant book-ability
-    # df = df[df["instant_bookable"] == inst_bookable]
 
     if map_box_selected_data is not None:
         selection_list = map_box_selected_data['points']
@@ -601,6 +602,7 @@ def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, s
 
         df = df[df[['long', 'lat']].apply(tuple, axis=1).isin(long_lat_list)]
 
+    #checking for reset graphs button
     callback = dash.callback_context
     if callback.triggered:
         prop_id = callback.triggered[0]['prop_id'].split('.')[0]
@@ -609,7 +611,7 @@ def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, s
 
     return map_boxplot.update(df), tree_map.update(df)
 
-
+#resetting figure filters
 @app.callback(
     Output("tab1-content", "children"),
     Input("select-neighbourhood-group", "value"),
@@ -623,7 +625,7 @@ def update_neighbourhoods(neighbourhood, click):
             return [build_mapbox_controls('All')]
     return build_mapbox_controls(neighbourhood)
 
-
+#updating choropleth figure
 @app.callback(
     Output(map_choropleth.html_id, 'figure'),
     Input('choropleth-dropdown', 'value')
@@ -631,7 +633,7 @@ def update_neighbourhoods(neighbourhood, click):
 def update_map_choropleth(value):
     return map_choropleth.update(value)
 
-
+#display further information depending on the mapboxplot click
 @app.callback(
     Output("data-display", "children"),
     Input(map_boxplot.html_id, 'clickData')
@@ -639,7 +641,7 @@ def update_map_choropleth(value):
 def update_data_display(clickData):
     return build_mapbox_info_display(clickData)
 
-
+#Update histogram figure with the choropleth information
 @app.callback(
     Output(map_histogram.html_id, 'figure'), [
         Input(map_choropleth.html_id, 'clickData'),
@@ -653,6 +655,5 @@ def update_map_histogram(clickData, dropdown_choice, startup, map_dropdown):
     else:
         name = clickData['points'][0]['location']
         return map_histogram.update(name, dropdown_choice, map_dropdown)
-
 
 app.run_server(debug=False, port='3131')

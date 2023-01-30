@@ -1,9 +1,9 @@
 from dash import dcc, html
 import plotly.express as px
-import plotly.graph_objects as go
 
-
+#Class for scatter mapboxplot
 class Mapboxplot(html.Div):
+    #intialisation function
     def __init__(self, name, df):
         self.html_id = name.lower().replace(" ", "-")
         self.df = df
@@ -16,14 +16,17 @@ class Mapboxplot(html.Div):
             ]
         )
 
-
+    #update function that will be called by callback function
+    #params:
+    #   Data: data passed by the callback function depending on the state of the previous figure
     def update(self, data): 
 
+        #token for the dark map
         token = "pk.eyJ1IjoibHVjdG9ydGlrZSIsImEiOiJjbGJnZHJncDYwZmNkM29zMmN6ZDFweXVhIn0.f9rwUtWIeGiwuJTPKzuMUA"
 
         self.df = data
 
-        # draw the figure
+        # draw the figure with data parameters
         self.fig = px.scatter_mapbox(
             self.df,
             lat="lat",
@@ -40,9 +43,11 @@ class Mapboxplot(html.Div):
             custom_data=['name']
         )
 
+        #calculate the amount of zoom depending on the lateral and longitudinal ranges 
         lat_range = max(self.df['lat']) - min(self.df['lat'])
         lon_range = max(self.df['long']) - min(self.df['long'])
         
+        #base zoom level
         zoom_level = 10
         zoom_scaler = (1/(lat_range + lon_range))
 
@@ -51,6 +56,7 @@ class Mapboxplot(html.Div):
         elif zoom_scaler > 2:
             zoom_level = 12 
 
+        #update layout with parameters
         self.fig.update_layout(
             mapbox_accesstoken=token,
             mapbox_style="dark",
@@ -61,6 +67,7 @@ class Mapboxplot(html.Div):
             paper_bgcolor="#191a1a",
         )
 
+        #update the traces
         self.fig.update_traces(
             hovertemplate="<br>".join([
                 '<b>%{customdata[0]}</b>',

@@ -1,10 +1,11 @@
 import json
-
 import plotly.express as px
 from dash import html, dcc
 
-
+#Choropleth graph class file
 class Choropleth(html.Div):
+
+    #class initialiser
     def __init__(self, name, df):
         self.html_id = name.lower().replace(" ", "-")
         self.df = df
@@ -17,30 +18,27 @@ class Choropleth(html.Div):
             ]
         )
 
+    #Update function that gets called in the app callbacks
+    #Params:
+    # map_type: ("neighbourhoods" or "boroughs") defines what kind of graph will be displayed
     def update(self, map_type):
         data = self.df.copy()
         # filter data on chosen groups
 
-        with open('Data/neighbourhoods.geojson') as f:
-            neighbourhoods = json.load(f)
-
-        with open('Data/boroughs.geojson') as f:
-            boroughs = json.load(f)
-        # filter data according to the given price range
-
-        feature = 'properties.ntaname'
-        location = 'NTA'
-        file = neighbourhoods
-
         if map_type == 'neighbourhoods':
+            
+            with open('Data/neighbourhoods.geojson') as f:
+                file = json.load(f)
+
             feature = 'properties.ntaname'
             location = 'NTA'
-            file = neighbourhoods
+        elif map_type == 'boroughs':
 
-        if map_type == 'boroughs':
+            with open('Data/boroughs.geojson') as f:
+                file = json.load(f)
+
             feature = 'properties.boro_name'
             location = 'neighbourhood_group'
-            file = boroughs
 
         token = "pk.eyJ1IjoibHVjdG9ydGlrZSIsImEiOiJjbGJnZHJncDYwZmNkM29zMmN6ZDFweXVhIn0.f9rwUtWIeGiwuJTPKzuMUA"
 
@@ -56,16 +54,19 @@ class Choropleth(html.Div):
                                         custom_data=['NTA', 'price']
                                         )
 
-        self.fig.update_layout(mapbox_accesstoken=token,
-                               mapbox_style="dark",
-                               font_color="#bfbbbb"
-                               )
+        #update the figure with style parameters
         self.fig.update_layout(
-            margin={"r": 0, "t": 0, "l": 0, "b": 0},
-            paper_bgcolor="#191a1a",
-            # plot_bgcolor="#323130"
+            mapbox_accesstoken=token,
+            mapbox_style="dark",
+            font_color="#bfbbbb"
         )
 
+        self.fig.update_layout(
+            margin={"r": 0, "t": 0, "l": 0, "b": 0},
+            paper_bgcolor="#191a1a"
+        )
+
+        #update the traces on the figure
         self.fig.update_traces(
             hovertemplate="<br>".join([
                 'Name: <b>%{customdata[0]}</b>',

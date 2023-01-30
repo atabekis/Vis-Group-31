@@ -3,9 +3,10 @@ import plotly.express as px
 from functions.config import count_words
 import plotly.graph_objects as go
 
-
+#Class for treemap figure
 class TreeMap(html.Div):
 
+    #initialisation function
     def __init__(self, name, df):
         self.html_id = name
         self.df = df
@@ -19,15 +20,18 @@ class TreeMap(html.Div):
             ]
         )
 
+    #update function that will be called form the callback functions
+    #params:
+    #   Data: data passed from callback function depending on the state of the previous figures and linked figures
     def update(self, data):
 
+        #count the words in the dataframe
         df = count_words(data, 30)
-
-
 
         #sort by descending order
         df.sort_values(by='count',inplace=True, ascending=False)
         
+        #draw the treemap figure
         fig = px.treemap(
             df,
             path=[px.Constant("<br>"), 'word'],
@@ -55,10 +59,9 @@ class TreeMap(html.Div):
             paper_bgcolor="#191a1a",
             height=300,
             font_color='#bfbbbb'
-
-            # width=1000
         )
 
+        #add annotations
         fig.add_annotation(
             text='Select an Area on the Mapbox or Click on a Word to Filter Listings',
             font={
