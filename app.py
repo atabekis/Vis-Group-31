@@ -187,15 +187,16 @@ def build_tabs():
                                 children=[
                                     html.Br(),
                                     html.Div(
+                                        id='loading-treemap',
                                         className='twelve columns',
-                                        # children=tree_map
-                                        children=[
-                                            dcc.Loading(
-                                                id='loading-treemap',
-                                                type='graph',
-                                                children=[tree_map]
-                                            )
-                                        ]
+                                        children=tree_map
+                                        # children=[
+                                        #     dcc.Loading(
+                                        #         id='loading-treemap',
+                                        #         type='graph',
+                                        #         children=[tree_map]
+                                        #     )
+                                        # ]
                                     )
                                 ]
                             )
@@ -320,7 +321,7 @@ def build_mapbox_info_display(clickData):
             html.Div(
                 className="twelve columns banner",
                 children=[
-                    html.H6('General Info'),
+                    html.H6('Rules'),
                     html.H2(
                         id='mapbox-general-info',
                         children=[rules]
