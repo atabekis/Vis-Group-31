@@ -551,14 +551,20 @@ def update_markdown(open_click, close_click):
         Input(map_boxplot.html_id, 'selectedData'),
         Input(tree_map.html_id, 'clickData'),
         Input(map_boxplot.html_id, "figure"),
-        Input('reset-graphs-button', "n_clicks")
+        Input('reset-graphs-button', "n_clicks"),
+        Input("tab1-content", "children")
 
     ])
 def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, service_fee_range, map_box_selected_data,
-                              tree_map_selected_data, current_data, click):
+                              tree_map_selected_data, current_data, click, children):
     # process data
     df = data.copy()
-    if tree_map_selected_data is not None:
+
+    callback = dash.callback_context
+    if callback.triggered:
+        prop_id = callback.triggered[0]['prop_id'].split('.')[0]
+
+    if (tree_map_selected_data is not None) and prop_id != 'reset-graphs-button':
         filter_string = tree_map_selected_data['points'][0]['label']
 
         df = df[df['processed'].str.contains(filter_string, case=False).fillna(False)]
@@ -601,28 +607,15 @@ def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, s
 
         df = df[df[['long', 'lat']].apply(tuple, axis=1).isin(long_lat_list)]
 
-    #checking for reset graphs button
-    callback = dash.callback_context
-    if callback.triggered:
-        prop_id = callback.triggered[0]['prop_id'].split('.')[0]
-        if prop_id == 'reset-graphs-button':
-            return [map_boxplot.update(data), tree_map.update(data)]
-
     return map_boxplot.update(df), tree_map.update(df)
 
 #resetting figure filters
 @app.callback(
     Output("tab1-content", "children"),
-    Input("select-neighbourhood-group", "value"),
     Input('reset-controls-button', 'n_clicks')
 )
-def update_neighbourhoods(neighbourhood, click):
-    callback = dash.callback_context
-    if callback.triggered:
-        prop_id = callback.triggered[0]['prop_id'].split('.')[0]
-        if prop_id == 'reset-controls-button':
-            return [build_mapbox_controls('All')]
-    return build_mapbox_controls(neighbourhood)
+def update_neighbourhoods( click):
+    return build_mapbox_controls('All')
 
 #updating choropleth figure
 @app.callback(
