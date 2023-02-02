@@ -44,17 +44,21 @@ class Mapboxplot(html.Div):
         )
 
         #calculate the amount of zoom depending on the lateral and longitudinal ranges 
-        lat_range = max(self.df['lat']) - min(self.df['lat'])
-        lon_range = max(self.df['long']) - min(self.df['long'])
-        
         #base zoom level
         zoom_level = 10
-        zoom_scaler = (1/(lat_range + lon_range))
+        try:
+            lat_range = max(self.df['lat']) - min(self.df['lat'])
+            lon_range = max(self.df['long']) - min(self.df['long'])
+            
+            #calculate zoom
+            zoom_scaler = (1/(lat_range + lon_range))
 
-        if zoom_scaler > 5:
-            zoom_level = 14
-        elif zoom_scaler > 2:
-            zoom_level = 12 
+            if zoom_scaler > 5:
+                zoom_level = 14
+            elif zoom_scaler > 2:
+                zoom_level = 12 
+        except:
+            print("no data available")
 
         #update layout with parameters
         self.fig.update_layout(

@@ -612,10 +612,16 @@ def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, s
 #resetting figure filters
 @app.callback(
     Output("tab1-content", "children"),
+    Input("select-neighbourhood-group", "value"),
     Input('reset-controls-button', 'n_clicks')
 )
-def update_neighbourhoods( click):
-    return build_mapbox_controls('All')
+def update_neighbourhoods(neighbourhood, click):
+    callback = dash.callback_context
+    if callback.triggered:
+        prop_id = callback.triggered[0]['prop_id'].split('.')[0]
+        if prop_id == 'reset-controls-button':
+            return [build_mapbox_controls('All')]
+    return build_mapbox_controls(neighbourhood)
 
 #updating choropleth figure
 @app.callback(
