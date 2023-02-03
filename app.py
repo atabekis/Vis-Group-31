@@ -1,7 +1,6 @@
 import dash
 from dash import dcc, html
 from dash.dependencies import Input, Output
-from dash.exceptions import PreventUpdate
 import numpy as np
 import pandas as pd
 from textwrap import dedent
@@ -25,13 +24,6 @@ This app.py file is seperated into multiple building functions for the construct
 ->The styling (CSS) part of the web application can be found in the 'assets' directory. The dash library automatically
   includes the styling given className as a parameter.
 """
-
-# ------------------------------------------------------------------------------------------------------#
-# ------------------------------- main todos go here please ------------------------------------------- #
-# *: Not important, **: Important, ***: Very important
-# TODO: ***check in a clean python env for requirements
-# ------------------------------------------------------------------------------------------------------#
-
 
 app = dash.Dash(__name__)
 app.title = 'JBI100 Group 31'
@@ -85,14 +77,14 @@ def build_explanation():
                     html.Div(
                         className='markdown-text',
                         children=dcc.Markdown(
-                            children=dedent("""
-                            This visualisation tool is made for investors looking for a neighbourhood/borough to invest in, fitting with their requirements.
-                            The tool allows the user to go through 2 tabs of visualisations.\n
-                            In the first tab Airbnb data can be explored per neighbourhood and borough in order to make it easier for the user to choose a
-                            starting location for their research.\n
-                            In the second tab the user can view every available property in Airbnb dataset on the new york map and can look into all properties
-                            of every listing.
-                            An accompanying treemap figure also assists the user to quickly filter for the most common words withing the chosen area of interest.
+                            children=dedent("""This visualisation tool is made for investors looking for a 
+                            neighbourhood/borough to invest in, fitting with their requirements. The tool allows the 
+                            user to go through 2 tabs of visualisations.\n In the first tab Airbnb data can be 
+                            explored per neighbourhood and borough in order to make it easier for the user to choose 
+                            a starting location for their research.\n In the second tab the user can view every 
+                            available property in Airbnb dataset on the new york map and can look into all properties 
+                            of every listing. An accompanying treemap figure also assists the user to quickly filter 
+                            for the most common words withing the chosen area of interest. 
 
                             """)
                         )
@@ -118,7 +110,7 @@ def build_tabs():
                 value='tab1',
                 className='custom-tabs',
                 children=[
-                    dcc.Tab(                #Choropleth tab
+                    dcc.Tab(  # Choropleth tab
                         id='tab1',
                         label='Choropleth',
                         value='tab1',
@@ -139,7 +131,7 @@ def build_tabs():
                             build_choropleth_tabs()
                         ]
                     ),
-                    dcc.Tab(            #Map box plot tab
+                    dcc.Tab(  # Map box plot tab
                         id='tab2',
                         label='Mapbox',
                         value='tab2',
@@ -525,7 +517,7 @@ app.layout = html.Div(
 # ----------------------- Setting the callback functions for interactions ----------------------------- #
 # ------------------------------------------------------------------------------------------------------#
 
-#further information button
+# further information button
 @app.callback(
     Output('markdown', 'style'),
     Input('whats-this-button', 'n_clicks'),
@@ -538,7 +530,8 @@ def update_markdown(open_click, close_click):
             return {'display': 'block'}
     return {'display': 'none'}
 
-#update treemap and mapboxplot figures
+
+# update treemap and mapboxplot figures
 @app.callback([
     Output(map_boxplot.html_id, "figure"),
     Output(tree_map.html_id, "figure")
@@ -591,7 +584,7 @@ def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, s
     min_price_mask = df["price"] >= price_range[0]
     max_price_mask = df["price"] <= price_range[1]
     df = df[min_price_mask & max_price_mask]
-    
+
     # filter data according to the given service fee range
     min_service_mask = df["service_fee"] >= service_fee_range[0]
     max_service_mask = df["service_fee"] <= service_fee_range[1]
@@ -609,7 +602,8 @@ def update_mapboxplot_treemap(neighbourhood_group, neighbourhood, price_range, s
 
     return map_boxplot.update(df), tree_map.update(df)
 
-#resetting figure filters
+
+# resetting figure filters
 @app.callback(
     Output("tab1-content", "children"),
     Input("select-neighbourhood-group", "value"),
@@ -623,7 +617,8 @@ def update_neighbourhoods(neighbourhood, click):
             return [build_mapbox_controls('All')]
     return build_mapbox_controls(neighbourhood)
 
-#updating choropleth figure
+
+# updating choropleth figure
 @app.callback(
     Output(map_choropleth.html_id, 'figure'),
     Input('choropleth-dropdown', 'value')
@@ -631,7 +626,8 @@ def update_neighbourhoods(neighbourhood, click):
 def update_map_choropleth(value):
     return map_choropleth.update(value)
 
-#display further information depending on the mapboxplot click
+
+# display further information depending on the mapboxplot click
 @app.callback(
     Output("data-display", "children"),
     Input(map_boxplot.html_id, 'clickData')
@@ -639,7 +635,8 @@ def update_map_choropleth(value):
 def update_data_display(clickData):
     return build_mapbox_info_display(clickData)
 
-#Update histogram figure with the choropleth information
+
+# Update histogram figure with the choropleth information
 @app.callback(
     Output(map_histogram.html_id, 'figure'), [
         Input(map_choropleth.html_id, 'clickData'),
@@ -653,5 +650,6 @@ def update_map_histogram(clickData, dropdown_choice, startup, map_dropdown):
     else:
         name = clickData['points'][0]['location']
         return map_histogram.update(name, dropdown_choice, map_dropdown)
+
 
 app.run_server(debug=False, port='3131')
